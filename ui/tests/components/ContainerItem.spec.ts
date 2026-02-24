@@ -102,7 +102,7 @@ describe('ContainerItem', () => {
   it('toggles detail view when header is clicked', async () => {
     expect(wrapper.vm.showDetail).toBe(false);
     
-    await wrapper.find('[style*="cursor: pointer"]').trigger('click');
+    await wrapper.find('.clickable-header').trigger('click');
     
     expect(wrapper.vm.showDetail).toBe(true);
   });
