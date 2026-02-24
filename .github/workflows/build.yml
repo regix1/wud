@@ -1,0 +1,211 @@
+name: Build and Push
+
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: regix1/wud
+  NODE_VERSION: '24'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Phase 1: Lint, Test, Build UI
+  # ──────────────────────────────────────────────
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            app/package-lock.json
+            ui/package-lock.json
+
+      - name: Install backend dependencies
+        run: cd app && npm ci
+
+      - name: Install frontend dependencies
+        run: cd ui && npm ci
+
+      - name: Lint backend
+        run: cd app && npm run lint
+
+      - name: Lint frontend
+        run: cd ui && npm run lint
+
+      - name: Test backend
+        run: cd app && npm test
+
+      - name: Test frontend
+        run: cd ui && npm run test:unit
+
+      - name: Build frontend
+        run: cd ui && npm run build
+
+      - name: Upload UI build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-dist
+          path: ui/dist/
+          retention-days: 1
+
+  # ──────────────────────────────────────────────
+  # Phase 2: Build Docker images natively per-arch
+  # ──────────────────────────────────────────────
+  build:
+    name: Build (${{ matrix.platform }})
+    needs: test
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download UI build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist
+          path: ui/dist/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          # Sanitize branch name (replace / and # with _)
+          VERSION="${VERSION//\//_}"
+          VERSION="${VERSION//#/_}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            WUD_VERSION=${{ steps.version.outputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # ──────────────────────────────────────────────
+  # Phase 3: Merge digests into multi-arch manifest
+  # ──────────────────────────────────────────────
+  merge:
+    name: Create Multi-Arch Manifest
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Derive tags
+        id: tags
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          VERSION="${VERSION//\//_}"
+          VERSION="${VERSION//#/_}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            # Release tag: :X.Y.Z, :X.Y, :X, :latest
+            TAGS="${IMAGE}:${VERSION}"
+            MINOR=$(echo "$VERSION" | sed -rn 's/^(v?[0-9]+\.[0-9]+)\.[0-9]+(.*)/\1/p')
+            MAJOR=$(echo "$VERSION" | sed -rn 's/^(v?[0-9]+)\.[0-9]+\.[0-9]+(.*)/\1/p')
+            if [ -n "$MINOR" ]; then
+              TAGS="${TAGS},${IMAGE}:${MINOR}"
+            fi
+            if [ -n "$MAJOR" ]; then
+              TAGS="${TAGS},${IMAGE}:${MAJOR}"
+            fi
+            TAGS="${TAGS},${IMAGE}:latest"
+          elif [[ "$VERSION" == "main" ]]; then
+            # Main branch: always tag as :latest
+            TAGS="${IMAGE}:latest"
+          else
+            # Other branches: tag with sanitized branch name
+            TAGS="${IMAGE}:${VERSION}"
+          fi
+
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+          echo "Tags: ${TAGS}"
+
+      - name: Create and push manifest
+        working-directory: /tmp/digests
+        run: |
+          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.tags.outputs.tags }}"
+          TAG_ARGS=()
+          for tag in "${TAG_ARRAY[@]}"; do
+            TAG_ARGS+=("-t" "$tag")
+          done
+
+          docker buildx imagetools create "${TAG_ARGS[@]}" \
+            $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)

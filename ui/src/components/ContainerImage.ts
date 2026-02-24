@@ -1,7 +1,11 @@
+import IconRenderer from "@/components/IconRenderer.vue";
 import { getRegistryProviderIcon } from "@/services/registry";
 import { defineComponent } from "vue";
 
 export default defineComponent({
+  components: {
+    IconRenderer,
+  },
   props: {
     image: {
       type: Object,

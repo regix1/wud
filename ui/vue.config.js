@@ -19,12 +19,12 @@ module.exports = defineConfig({
 
   pwa: {
     name: "WUD",
-    themeColor: "#00355E",
-    msTileColor: "#00355E",
+    themeColor: "#1E1E1E",
+    msTileColor: "#1E1E1E",
     mobileWebAppCapable: "yes",
     manifestOptions: {
       short_name: "WUD",
-      background_color: "#00355E",
+      background_color: "#1E1E1E",
     },
   },
 

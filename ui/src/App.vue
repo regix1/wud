@@ -14,7 +14,11 @@
     <v-main>
       <v-row>
         <v-col>
-          <router-view></router-view>
+          <router-view v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </v-col>
       </v-row>
     </v-main>
@@ -26,7 +30,12 @@
 <script lang="ts" src="./App.ts"></script>
 
 <style scoped>
-.main-background {
-  /* background-color: #f5f5f5; */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

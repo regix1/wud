@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="ma-0 mb-3 pa-md-0">
-    <v-row dense>
+    <v-row dense class="rounded-lg">
       <v-col>
         <v-select
           :hide-details="true"
@@ -50,9 +50,8 @@
         >
         </v-autocomplete>
       </v-col>
-      <v-col>
+      <v-col class="d-flex align-center">
         <v-switch
-          class="switch-top"
           label="Update available"
           v-model="updateAvailableLocal"
           @update:modelValue="emitUpdateAvailableChanged"
@@ -60,9 +59,8 @@
           density="compact"
         />
       </v-col>
-      <v-col>
+      <v-col class="d-flex align-center">
         <v-switch
-          class="switch-top"
           label="Oldest first"
           v-model="oldestFirstLocal"
           @update:modelValue="emitOldestFirstChanged"
@@ -77,7 +75,7 @@
           :loading="isRefreshing"
         >
           Watch now
-          <v-icon> mdi-refresh</v-icon>
+          <v-icon end>mdi-refresh</v-icon>
         </v-btn>
         <br />
       </v-col>
@@ -86,9 +84,3 @@
 </template>
 
 <script lang="ts" src="./ContainerFilter.ts"></script>
-
-<style scoped>
-.switch-top {
-  margin-top: 4px;
-}
-</style>

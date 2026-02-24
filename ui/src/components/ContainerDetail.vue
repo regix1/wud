@@ -7,7 +7,7 @@
       <v-list-item-title>Id</v-list-item-title>
       <v-list-item-subtitle>
         {{ container.id }}
-        <v-tooltip bottom>
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
               variant="text"
@@ -54,16 +54,16 @@
       </template>
       <v-list-item-title>
         Include tags
-        <v-tooltip bottom>
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
-              x-small
+              size="x-small"
               icon
               v-bind="props"
               href="https://regex101.com"
               target="_blank"
             >
-              <v-icon>mdi-regex</v-icon>
+              <v-icon size="x-small">mdi-regex</v-icon>
             </v-btn>
           </template>
           <span>Test on regex101.com</span>
@@ -77,16 +77,16 @@
       </template>
       <v-list-item-title>
         Exclude tags
-        <v-tooltip bottom>
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
-              x-small
+              size="x-small"
               icon
               v-bind="props"
               href="https://regex101.com"
               target="_blank"
             >
-              <v-icon>mdi-regex</v-icon>
+              <v-icon size="x-small">mdi-regex</v-icon>
             </v-btn>
           </template>
           <span>Test on regex101.com</span>

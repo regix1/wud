@@ -2,16 +2,15 @@
   <v-card>
     <v-card-title
       @click="collapse()"
-      style="cursor: pointer"
-      class="pa-3 d-flex align-center bg-surface"
+      class="clickable-header pa-3 d-flex align-center bg-surface"
     >
-      <div class="text-body-3">
-        <v-chip label color="info" variant="outlined">{{ trigger.type }}</v-chip>
+      <div class="text-body-2">
+        <v-chip label color="info" variant="tonal">{{ trigger.type }}</v-chip>
         /
-        <v-chip label color="info" variant="outlined">{{ trigger.name }}</v-chip>
+        <v-chip label color="info" variant="tonal">{{ trigger.name }}</v-chip>
       </div>
       <v-spacer />
-      <v-icon>{{ trigger.icon }}</v-icon>
+      <v-icon :size="24">{{ trigger.icon }}</v-icon>
       <v-icon>{{ showDetail ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
     </v-card-title>
     <transition name="expand-transition">
@@ -36,7 +35,7 @@
           <v-col cols="4" class="text-right">
             <v-btn variant="outlined" size="small" color="accent" @click="showTestForm = true">
               Test
-              <v-icon right>mdi-test-tube</v-icon>
+              <v-icon end>mdi-test-tube</v-icon>
             </v-btn>
 
             <v-navigation-drawer
@@ -44,7 +43,6 @@
               location="right"
               temporary
               width="400"
-              style="position: absolute;"
             >
               <div class="pa-3">
                 <div class="text-subtitle-2 mb-2">
@@ -129,3 +127,9 @@
 </template>
 
 <script lang="ts" src="./TriggerDetail.ts"></script>
+
+<style scoped>
+.clickable-header {
+  cursor: pointer;
+}
+</style>

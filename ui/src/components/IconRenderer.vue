@@ -18,7 +18,7 @@
     :alt="icon"
     class="simple-icon"
   />
-  <v-icon v-else :style="iconStyle">
+  <v-icon v-else :size="size">
     {{ normalizedIcon }}
   </v-icon>
 </template>

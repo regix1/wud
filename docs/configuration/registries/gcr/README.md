@@ -18,7 +18,7 @@ The `gcr` registry lets you configure [GCR](https://cloud.google.com/container-r
 ```yaml
 services:
   whatsupdocker:
-    image: getwud/wud
+    image: ghcr.io/regix1/wud
     ...
     environment:
       - WUD_REGISTRY_GCR_PRIVATE_CLIENTEMAIL=johndoe@mysuperproject.iam.gserviceaccount.com
@@ -30,7 +30,7 @@ docker run \
   -e WUD_REGISTRY_GCR_PRIVATE_CLIENTEMAIL="johndoe@mysuperproject.iam.gserviceaccount.com" \
   -e WUD_REGISTRY_GCR_PRIVATE_PRIVATEKEY="-----BEGIN PRIVATE KEY-----xxxxxxxxxxx\n-----END PRIVATE KEY-----\n" \
   ...
-  getwud/wud
+  ghcr.io/regix1/wud
 ```
 <!-- tabs:end -->
 

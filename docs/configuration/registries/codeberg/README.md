@@ -18,7 +18,7 @@ The `codeberg` registry lets you configure [Codeberg](https://codeberg.org/) int
 ```yaml
 services:
   whatsupdocker:
-    image: getwud/wud
+    image: ghcr.io/regix1/wud
     ...
     environment:
       - WUD_REGISTRY_CODEBERG_PRIVATE_LOGIN=john
@@ -30,6 +30,6 @@ docker run \
   -e "WUD_REGISTRY_CODEBERG_PRIVATE_LOGIN=john" \
   -e "WUD_REGISTRY_CODEBERG_PRIVATE_PASSWORD=doe" \
   ...
-  getwud/wud
+  ghcr.io/regix1/wud
 ```
 <!-- tabs:end -->

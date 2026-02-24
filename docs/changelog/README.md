@@ -86,7 +86,7 @@ Internal ids has changed; your [existing state](/configuration/storage/) will be
 !> **Breaking changes!** \
 **WUD** is moving to its own organization! \
 Github project is now located at [https://github.com/getwud/wud](https://github.com/getwud/wud) \
-Docker image is now located at [https://hub.docker.com/r/getwud/wud](https://hub.docker.com/r/getwud/wud)
+Docker image is now located at [https://ghcr.io/regix1/wud](https://ghcr.io/regix1/wud)
 
 ## 6.6.1
 - :star: [API/UI] - Add a feature to allow/disallow delete operations (`WUD_SERVER_FEATURE_DELETE`)

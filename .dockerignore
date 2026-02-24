@@ -12,7 +12,7 @@ scripts/
 .github/
 *.md
 !README.md
-.travis.yml
+UI_IMPROVEMENT_PLAN.md
 .eslintrc*
 .prettierrc*
 babel.config.js

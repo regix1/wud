@@ -4,15 +4,53 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="theme-color" content="#1E1E1E">
     <title>WUD</title>
-</head>
+    <style>
+      /* Dark mode foundation - prevents white flash on load */
+      html, body {
+        background-color: #1E1E1E;
+      }
 
-<style>
-    body{
-        /* Prevent page to be horizontally scrollable */
+      /* Custom scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1E1E1E;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4A4A4A;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #5A5A5A;
+      }
+
+      /* Firefox scrollbar */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #4A4A4A #1E1E1E;
+      }
+
+      /* Subtle dot pattern background + prevent horizontal scroll */
+      body {
+        background-image: radial-gradient(circle, rgba(0, 120, 212, 0.03) 1px, transparent 1px);
+        background-size: 32px 32px;
         overflow-x: hidden;
-    }
-</style>
+      }
+
+      /* Respect reduced motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+</head>
 <body>
 
 <noscript>

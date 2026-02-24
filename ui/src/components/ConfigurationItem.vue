@@ -2,13 +2,12 @@
   <v-card>
     <v-card-title
       @click="collapse()"
-      style="cursor: pointer"
-      class="pa-3 d-flex align-center bg-surface"
+      class="clickable-header pa-3 d-flex align-center bg-surface"
     >
-      <div class="text-body-3">
-        <v-chip label color="info" variant="outlined">{{ item.type }}</v-chip>
+      <div class="text-body-2">
+        <v-chip label color="info" variant="tonal">{{ item.type }}</v-chip>
         /
-        <v-chip label color="info" variant="outlined">{{ item.name }}</v-chip>
+        <v-chip label color="info" variant="tonal">{{ item.name }}</v-chip>
       </div>
       <v-spacer />
       <IconRenderer :icon="item.icon" :size="24" :margin-right="8" />
@@ -36,3 +35,13 @@
 </template>
 
 <script lang="ts" src="./ConfigurationItem.ts"></script>
+
+<style scoped>
+.clickable-header {
+  cursor: pointer;
+}
+
+.v-card {
+  transition: box-shadow 0.2s ease;
+}
+</style>

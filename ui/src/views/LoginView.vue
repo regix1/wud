@@ -1,12 +1,15 @@
 <template>
   <v-container class="login-background">
-    <v-dialog v-model="showDialog" width="400px" persistent no-click-animation>
-      <v-card>
+    <v-dialog v-model="showDialog" width="400px" persistent>
+      <v-card elevation="8" class="login-card">
         <v-container>
           <v-row justify="center" class="ma-1">
-            <v-avatar color="primary" size="80">
-              <v-icon color="white" size="x-large">mdi-account</v-icon>
-            </v-avatar>
+            <div class="d-flex flex-column align-center">
+              <img :src="logo" alt="WUD Logo" class="login-logo mb-2" />
+              <v-avatar color="primary" size="80">
+                <v-icon color="on-primary" size="x-large">mdi-account</v-icon>
+              </v-avatar>
+            </div>
           </v-row>
           <v-row>
             <v-container>
@@ -44,3 +47,20 @@
 </template>
 
 <script lang="ts" src="./LoginView.ts"></script>
+<style scoped>
+.login-background {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  border-top: 3px solid #0078D4;
+}
+
+.login-logo {
+  width: 64px;
+  height: 64px;
+}
+</style>

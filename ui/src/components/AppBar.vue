@@ -1,8 +1,8 @@
 <template>
-  <v-app-bar app flat dark tile clipped-left dense color="primary">
+  <v-app-bar flat rounded="0" border="b thin" density="compact">
     <v-toolbar-title
       v-if="viewName && 'home'.toLowerCase() !== viewName.toLowerCase()"
-      class="text-body-1 text-capitalize ma-0 pl-4"
+      class="text-h6 text-capitalize ma-0 pl-4"
       >{{ viewName }}</v-toolbar-title
     >
     <v-spacer />

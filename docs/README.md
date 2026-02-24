@@ -1,6 +1,6 @@
 # Introduction
 
-![Docker pulls](https://img.shields.io/docker/pulls/getwud/wud)
+![GHCR](https://img.shields.io/badge/ghcr.io-regix1%2Fwud-blue)
 ![License](https://img.shields.io/github/license/getwud/wud)
 
 ## WUD <small>(aka ***What's up Docker?***)</small>

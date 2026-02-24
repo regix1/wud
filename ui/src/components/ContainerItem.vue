@@ -13,27 +13,25 @@
       </div>
       <v-divider class="pb-3"></v-divider>
     </div>
-    <v-card>
+    <v-card :class="{ 'update-available': container.updateAvailable }">
       <v-card-title
         @click="collapseDetail()"
-        style="cursor: pointer"
-        class="pa-3 d-flex align-center bg-surface"
+        class="clickable-header pa-3 d-flex align-center bg-surface"
       >
         <div
-          class="text-body-3 d-flex align-center"
-          style="gap: 5px"
+          class="text-body-2 d-flex align-center gap-sm"
         >
           <span v-if="smAndUp">
-            <v-chip label color="info" variant="outlined" disabled>
-              <v-icon left>mdi-update</v-icon>
+            <v-chip label color="info" variant="tonal">
+              <v-icon start>mdi-update</v-icon>
               {{ container.watcher }}
             </v-chip>
             /
           </span>
           <span v-if="mdAndUp">
-            <v-chip label color="info" variant="outlined" disabled>
-              <IconRenderer 
-                v-if="smAndUp" 
+            <v-chip label color="info" variant="tonal">
+              <IconRenderer
+                v-if="smAndUp"
                 :icon="registryIcon"
                 :size="24"
                 :margin-right="8"
@@ -42,31 +40,31 @@
             </v-chip>
             /
           </span>
-          <v-chip label color="info" variant="outlined" disabled>
-            <IconRenderer 
-              v-if="smAndUp" 
+          <v-chip label color="info" variant="tonal">
+            <IconRenderer
+              v-if="smAndUp"
               :icon="container.displayIcon"
               :size="24"
               :margin-right="8"
             />
-            <span style="overflow: hidden; text-overflow: ellipsis">
+            <span class="text-truncate-custom">
               {{ container.displayName }}
             </span>
           </v-chip>
           <span>
             :
-            <v-chip label variant="outlined" color="info" disabled>
+            <v-chip label variant="tonal" color="info">
               {{ container.image.tag.value }}
             </v-chip>
           </span>
         </div>
-        
+
         <v-spacer />
-        
-        <div class="d-flex align-center" style="gap: 8px">
-          <span v-if="smAndUp && container.updateAvailable" class="d-flex align-center" style="gap: 4px">
+
+        <div class="d-flex align-center gap-sm">
+          <span v-if="smAndUp && container.updateAvailable" class="d-flex align-center gap-sm">
             <v-icon>mdi-arrow-right</v-icon>
-            <v-tooltip bottom>
+            <v-tooltip location="bottom">
               <template v-slot:activator="{ props }">
                 <v-chip
                   label
@@ -120,10 +118,10 @@
             </v-tab>
             <v-tab>
               <span v-if="smAndUp">Container</span>
-              <IconRenderer 
+              <IconRenderer
                 :icon="container.displayIcon"
                 :size="24"
-                :margin-right="8"
+                :margin-right="0"
               />
             </v-tab>
             <v-tab v-if="container.error">
@@ -165,18 +163,18 @@
                 >
                   <template v-slot:activator="{ props }">
                     <v-btn
-                      small
+                      size="small"
                       color="error"
                       variant="outlined"
                       v-bind="props"
                     >
                       Delete
-                      <v-icon right>mdi-delete</v-icon>
+                      <v-icon end>mdi-delete</v-icon>
                     </v-btn>
                   </template>
 
                   <v-card class="text-center">
-                    <v-app-bar color="error" dark flat dense>
+                    <v-app-bar color="error" flat density="compact">
                       <v-toolbar-title class="text-body-1">
                         Delete the container?
                       </v-toolbar-title>
@@ -185,7 +183,7 @@
                       <v-row class="mt-2" no-gutters>
                         <v-col>
                           Delete
-                          <span class="font-weight-bold error--text">{{
+                          <span class="font-weight-bold text-error">{{
                             container.name
                           }}</span>
                           from the list?
@@ -197,13 +195,13 @@
                       </v-row>
                       <v-row>
                         <v-col class="text-center">
-                          <v-btn variant="outlined" @click="dialogDelete = false" small>
+                          <v-btn variant="outlined" @click="dialogDelete = false" size="small">
                             Cancel
                           </v-btn>
                           &nbsp;
                           <v-btn
                             color="error"
-                            small
+                            size="small"
                             @click="
                               dialogDelete = false;
                               deleteContainer();
@@ -228,12 +226,28 @@
 <script lang="ts" src="./ContainerItem.ts"></script>
 
 <style scoped>
-.v-chip--disabled {
-  opacity: 1;
-  pointer-events: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.clickable-header {
+  cursor: pointer;
+}
+
+.gap-sm {
+  gap: 8px;
+}
+
+.text-truncate-custom {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-card {
+  transition: box-shadow 0.2s ease;
+}
+
+.v-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.update-available {
+  border-left: 3px solid rgb(var(--v-theme-warning));
 }
 </style>

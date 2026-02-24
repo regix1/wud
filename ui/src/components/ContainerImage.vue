@@ -6,7 +6,7 @@
       </template>
       <v-list-item-title>
         Id
-        <v-tooltip bottom>
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
               variant="text"
@@ -32,7 +32,7 @@
     </v-list-item>
     <v-list-item>
       <template v-slot:prepend>
-        <v-icon color="secondary">{{ registryIcon }}</v-icon>
+        <IconRenderer :icon="registryIcon" :size="24" :margin-right="0" />
       </template>
       <v-list-item-title>Registry</v-list-item-title>
       <v-list-item-subtitle>{{ image.registry.name }}</v-list-item-subtitle>
@@ -56,7 +56,7 @@
       </template>
       <v-list-item-title>
         Digest
-        <v-tooltip bottom>
+        <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn
               variant="text"

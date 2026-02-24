@@ -1,11 +1,8 @@
 <template>
   <v-navigation-drawer
-    app
     :rail="mini"
     permanent
     :disable-route-watcher="true"
-    :clipped="true"
-    color="primary"
     theme="dark"
   >
     <v-toolbar flat class="ma-0 pa-0" color="primary">
@@ -28,12 +25,14 @@
         >
           <v-list-item-title>Containers</v-list-item-title>
         </v-list-item>
+      </v-fade-transition>
+    </v-list>
 
-        <v-list-item key="divider" class="mb-0" dense>
-          <v-divider />
-        </v-list-item>
+    <v-divider key="divider" />
 
-        <v-list-group v-if="!mini" key="configuration" color="white">
+    <v-list nav class="pt-0 pb-0">
+      <v-fade-transition group hide-on-leave mode="in-out">
+        <v-list-group v-if="!mini" key="configuration">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" prepend-icon="mdi-cogs">
               <v-list-item-title>Configuration</v-list-item-title>
@@ -66,18 +65,18 @@
       </v-fade-transition>
     </v-list>
 
-    <template v-slot:append v-if="!mini">
+    <template v-slot:append>
       <v-list>
         <v-list-item class="ml-2 mb-2">
           <v-switch
             hide-details
             inset
-            label="Dark mode"
             v-model="darkMode"
             @update:model-value="toggleDarkMode"
           >
             <template v-slot:label>
-              <v-icon>mdi-weather-night</v-icon>
+              <v-icon class="mr-2">mdi-weather-night</v-icon>
+              <span v-if="!mini">Dark Mode</span>
             </template>
           </v-switch>
         </v-list-item>
@@ -87,3 +86,9 @@
 </template>
 
 <script lang="ts" src="./NavigationDrawer.ts"></script>
+
+<style scoped>
+.v-list-item--active {
+  border-left: 3px solid rgb(var(--v-theme-primary));
+}
+</style>

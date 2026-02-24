@@ -1,5 +1,12 @@
 import { defineComponent } from "vue";
 
+const LEVEL_COLOR_MAP: Record<string, string> = {
+  error: "error",
+  success: "success",
+  warning: "warning",
+  info: "primary",
+};
+
 export default defineComponent({
   props: {
     show: {
@@ -30,7 +37,11 @@ export default defineComponent({
           this.closeSnackbar();
         }
       }
-    }
+    },
+
+    snackbarColor(): string {
+      return LEVEL_COLOR_MAP[this.level] || "primary";
+    },
   },
 
   methods: {

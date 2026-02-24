@@ -11,8 +11,12 @@ export default defineComponent({
   setup() {
     const theme = useTheme();
     const mini = ref(true);
-    const darkMode = ref(localStorage.darkMode === "true");
-    
+    const darkMode = ref(
+      localStorage.darkMode !== undefined
+        ? localStorage.darkMode === "true"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+
     const configurationItems = [
       {
         to: "/configuration/authentications",

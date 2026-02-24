@@ -1,7 +1,7 @@
 # Common Stage
 FROM node:24-alpine AS base
 
-LABEL maintainer="fmartinou"
+LABEL maintainer="regix1"
 EXPOSE 3000
 
 ARG WUD_VERSION=unknown

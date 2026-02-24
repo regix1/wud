@@ -13,7 +13,7 @@
         </v-list-item-title>
         <v-list-item-subtitle>
           {{ result.tag }}
-          <v-tooltip bottom>
+          <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                 variant="text"
@@ -45,7 +45,7 @@
         <v-list-item-title> Digest </v-list-item-title>
         <v-list-item-subtitle>
           {{ result.digest }}
-          <v-tooltip bottom>
+          <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                 variant="text"

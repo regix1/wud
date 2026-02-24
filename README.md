@@ -2,7 +2,7 @@
 
 aka ***What's up Docker?***
 
-![Docker pulls](https://img.shields.io/docker/pulls/getwud/wud)
+![GHCR](https://img.shields.io/badge/ghcr.io-regix1%2Fwud-blue)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=ZSDMEC3ZE8DQ8&no_recurring=0&currency_code=EUR)
 [![Donate](https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/61rUNMm)
 

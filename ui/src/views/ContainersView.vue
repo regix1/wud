@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pa-4">
     <v-row dense>
       <v-col>
         <container-filter
@@ -23,23 +23,29 @@
         />
       </v-col>
     </v-row>
-<v-row
-        v-for="(container, index) in containersFiltered"
-        :key="container.id"
-      >
-        <v-col class="pt-2 pb-2">
-          <container-item
-            :groupingLabel="groupByLabel"
-            :previousContainer="containersFiltered[index - 1]"
-            :container="container"
-            :oldest-first="oldestFirst"
-            @delete-container="deleteContainer(container)"
-            @container-deleted="removeContainerFromList(container)"
-          />
-        </v-col>
-      </v-row>
+    <v-row
+      v-for="(container, index) in containersFiltered"
+      :key="container.id"
+    >
+      <v-col class="pt-2 pb-2">
+        <container-item
+          :groupingLabel="groupByLabel"
+          :previousContainer="containersFiltered[index - 1]"
+          :container="container"
+          :oldest-first="oldestFirst"
+          @delete-container="deleteContainer(container)"
+          @container-deleted="removeContainerFromList(container)"
+        />
+      </v-col>
+    </v-row>
     <v-row v-if="containersFiltered.length === 0">
-      <v-card-subtitle class="text-h6">No containers found</v-card-subtitle>
+      <v-col>
+        <v-card variant="flat" class="text-center pa-8 my-4">
+          <v-icon size="64" color="secondary" class="mb-4">mdi-docker</v-icon>
+          <div class="text-h6">No containers found</div>
+          <div class="text-body-2 text-medium-emphasis mt-2">Containers will appear here once watchers detect them</div>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>

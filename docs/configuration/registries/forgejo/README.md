@@ -19,7 +19,7 @@ The `forgejo` registry lets you configure a self-hosted [Forgejo](https://forgej
 ```yaml
 services:
   whatsupdocker:
-    image: getwud/wud
+    image: ghcr.io/regix1/wud
     ...
     environment:
       - WUD_REGISTRY_FORGEJO_PRIVATE_URL=https://forgejo.acme.com
@@ -33,6 +33,6 @@ docker run \
   -e "WUD_REGISTRY_FORGEJO_PRIVATE_LOGIN=john" \
   -e "WUD_REGISTRY_FORGEJO_PRIVATE_PASSWORD=doe" \
   ...
-  getwud/wud
+  ghcr.io/regix1/wud
 ```
 <!-- tabs:end -->
