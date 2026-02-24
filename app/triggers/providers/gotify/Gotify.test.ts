@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { ValidationError } from 'joi';
-import axios from 'axios';
 
 jest.mock('axios');
 import Gotify from './Gotify';
@@ -38,7 +37,9 @@ test('validateConfiguration should apply default configuration', async () => {
         url: configurationValid.url,
         token: configurationValid.token,
     });
-    const { priority, ...expectedWithoutPriority } = configurationValid;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { priority: _priority, ...expectedWithoutPriority } =
+        configurationValid;
     expect(validatedConfiguration).toStrictEqual(expectedWithoutPriority);
 });
 

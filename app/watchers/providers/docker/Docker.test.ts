@@ -694,7 +694,7 @@ describe('Docker Watcher', () => {
             const mockImageInspect = { Config: { Image: 'sha256:legacy123' } };
             mockImage.inspect.mockResolvedValue(mockImageInspect);
 
-            const result = await docker.findNewVersion(container, mockLogChild);
+            await docker.findNewVersion(container, mockLogChild);
 
             expect(mockImage.inspect).toHaveBeenCalled();
             expect(container.image.digest.value).toBe('sha256:legacy123');
@@ -813,7 +813,7 @@ describe('Docker Watcher', () => {
             // Mock the validateContainer function to return the container
             const containerModule = await import('../../../model/container');
             const validateContainer = containerModule.validate;
-            // @ts-ignore
+            // @ts-expect-error mock on imported function
             validateContainer.mockReturnValue({
                 id: '123',
                 name: 'test-container',
@@ -862,7 +862,7 @@ describe('Docker Watcher', () => {
 
             const containerModule = await import('../../../model/container');
             const validateContainer = containerModule.validate;
-            // @ts-ignore
+            // @ts-expect-error mock on imported function
             validateContainer.mockReturnValue({
                 id: '123',
                 name: 'prometheus',
@@ -905,7 +905,7 @@ describe('Docker Watcher', () => {
             // Mock the validateContainer function to return the container
             const containerModule = await import('../../../model/container');
             const validateContainer = containerModule.validate;
-            // @ts-ignore
+            // @ts-expect-error mock on imported function
             validateContainer.mockReturnValue({
                 id: '123',
                 name: 'test',
@@ -970,7 +970,7 @@ describe('Docker Watcher', () => {
             // Mock the validateContainer function to return the container
             const containerModule = await import('../../../model/container');
             const validateContainer = containerModule.validate;
-            // @ts-ignore
+            // @ts-expect-error mock on imported function
             validateContainer.mockReturnValue({
                 id: '123',
                 name: 'test',
@@ -1171,7 +1171,7 @@ describe('isDigestToWatch Logic', () => {
 
         const containerModule = await import('../../../model/container');
         const validateContainer = containerModule.validate;
-        // @ts-ignore
+        // @ts-expect-error mock on imported function
         validateContainer.mockImplementation((c) => c);
 
         return container;

@@ -30,7 +30,6 @@ import {
     validate as validateContainer,
     fullName,
     Container,
-    ContainerImage,
 } from '../../../model/container';
 import * as registry from '../../../registry';
 import { getWatchContainerGauge } from '../../../prometheus/watcher';
@@ -358,16 +357,16 @@ class Docker extends Watcher {
                 this.log = log.child({
                     component: `watcher.docker.${this.name || 'default'}`,
                 });
-            } catch (error) {
+            } catch {
                 // Fallback to silent logger if log module fails
                 this.log = {
-                    // @ts-ignore Unused implementation
+                    // @ts-expect-error Unused implementation
                     info: () => {},
-                    // @ts-ignore Unused implementation
+                    // @ts-expect-error Unused implementation
                     warn: () => {},
-                    // @ts-ignore Unused implementation
+                    // @ts-expect-error Unused implementation
                     error: () => {},
-                    // @ts-ignore Unused implementation
+                    // @ts-expect-error Unused implementation
                     debug: () => {},
                     child: () => this.log,
                 };
@@ -877,9 +876,12 @@ class Docker extends Watcher {
             this.ensureLogger();
             this.log.debug(`Container ${containerInStore.id} already in store`);
             // Re-evaluate wud.watch.digest label in case it changed
-            const digestLabelValue = container.Labels ? container.Labels[wudWatchDigest] : undefined;
+            const digestLabelValue = container.Labels
+                ? container.Labels[wudWatchDigest]
+                : undefined;
             if (digestLabelValue !== undefined && digestLabelValue !== '') {
-                containerInStore.image.digest.watch = digestLabelValue.toLowerCase() === 'true';
+                containerInStore.image.digest.watch =
+                    digestLabelValue.toLowerCase() === 'true';
             }
             return containerInStore;
         }

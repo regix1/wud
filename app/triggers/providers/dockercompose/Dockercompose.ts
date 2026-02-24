@@ -122,7 +122,7 @@ class Dockercompose extends Docker {
             // Check if compose file exists
             try {
                 await fs.access(composeFile);
-            } catch (e) {
+            } catch {
                 this.log.warn(
                     `Compose file ${composeFile} for container ${container.name} does not exist`,
                 );

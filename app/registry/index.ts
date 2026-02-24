@@ -57,7 +57,7 @@ function getAvailableProviders(basePath: string) {
             })
             .sort();
         return providers;
-    } catch (e) {
+    } catch {
         return [];
     }
 }

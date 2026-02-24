@@ -4,9 +4,7 @@ import Component from '../registry/Component';
 import { getSummaryTags } from '../prometheus/registry';
 import { ContainerImage } from '../model/container';
 
-export interface RegistryImage extends ContainerImage {
-    // Add any registry specific properties if needed
-}
+export type RegistryImage = ContainerImage;
 
 export interface RegistryManifest {
     digest?: string;
@@ -59,6 +57,7 @@ class Registry extends Component {
      * @param image the image
      * @returns {boolean}
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     match(_image: ContainerImage): boolean {
         return false;
     }
@@ -122,9 +121,11 @@ class Registry extends Component {
      * @param lastItem
      * @returns {Promise<*>}
      */
+
     getTagsPage(
         image: ContainerImage,
         lastItem: string | undefined = undefined,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _link: string | undefined = undefined,
     ) {
         // Default items per page (not honoured by all registries)

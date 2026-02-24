@@ -1,7 +1,7 @@
 // @ts-nocheck
 import ECR from 'aws-sdk/clients/ecr';
 import maintenanceMode from 'aws-sdk/lib/maintenance_mode_message';
-// @ts-ignore
+// @ts-expect-error suppress aws sdk maintenance mode message
 maintenanceMode.suppress = true; // Disable aws sdk maintenance mode message at startup
 import axios from 'axios';
 import Registry from '../../Registry';
