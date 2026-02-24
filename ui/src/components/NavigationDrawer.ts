@@ -1,5 +1,5 @@
-import { ref, onMounted, defineComponent } from "vue";
-import { useTheme } from "vuetify";
+import { ref, computed, onMounted, defineComponent } from "vue";
+import { useTheme, useDisplay } from "vuetify";
 import { getContainerIcon } from "@/services/container";
 import { getRegistryIcon } from "@/services/registry";
 import { getTriggerIcon } from "@/services/trigger";
@@ -8,8 +8,17 @@ import { getWatcherIcon } from "@/services/watcher";
 import { getAuthenticationIcon } from "@/services/authentication";
 
 export default defineComponent({
-  setup() {
+  props: {
+    modelValue: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ["update:modelValue"],
+  setup(props, { emit }) {
     const theme = useTheme();
+    const { mobile } = useDisplay();
+    const isMobile = computed(() => mobile.value);
     const mini = ref(true);
     const darkMode = ref(
       localStorage.darkMode !== undefined
@@ -56,6 +65,11 @@ export default defineComponent({
       applyTheme(darkMode.value);
     };
 
+    const drawerOpen = computed({
+      get: () => props.modelValue,
+      set: (value: boolean) => emit("update:modelValue", value),
+    });
+
     onMounted(() => {
       applyTheme(darkMode.value);
     });
@@ -63,6 +77,8 @@ export default defineComponent({
     return {
       mini,
       darkMode,
+      isMobile,
+      drawerOpen,
       containerIcon: getContainerIcon(),
       configurationItems,
       toggleDarkMode,

@@ -1,5 +1,6 @@
 import { inject, defineComponent } from "vue";
 import type { ComponentPublicInstance } from "vue";
+import { useDisplay } from "vuetify";
 import { getOidcRedirection, getStrategies } from "@/services/auth";
 import LoginBasic from "@/components/LoginBasic.vue";
 import LoginOidc from "@/components/LoginOidc.vue";
@@ -30,8 +31,10 @@ export default defineComponent({
   },
   setup() {
     const eventBus = inject("eventBus") as EventBus;
+    const { smAndUp } = useDisplay();
     return {
       eventBus,
+      smAndUp,
     };
   },
   data() {

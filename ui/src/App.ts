@@ -32,6 +32,11 @@ export default defineComponent({
     const snackbarShow = ref(false);
     const snackbarLevel = ref("info");
     const user = ref(undefined);
+    const drawerOpen = ref(true);
+
+    const toggleNav = () => {
+      drawerOpen.value = !drawerOpen.value;
+    };
 
     const items = computed(() => {
       return route.fullPath
@@ -102,6 +107,8 @@ export default defineComponent({
       user,
       items,
       authenticated,
+      drawerOpen,
+      toggleNav,
     };
   },
 });

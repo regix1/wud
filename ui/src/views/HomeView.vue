@@ -102,8 +102,8 @@
 }
 
 .home-icon {
-  font-size: 80px;
-  width: 80px;
-  height: 80px;
+  font-size: clamp(48px, 10vw, 80px);
+  width: clamp(48px, 10vw, 80px);
+  height: clamp(48px, 10vw, 80px);
 }
 </style>

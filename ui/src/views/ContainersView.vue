@@ -30,7 +30,7 @@
       <v-col class="container-item-col">
         <container-item
           :groupingLabel="groupByLabel"
-          :previousContainer="containersFiltered[index - 1]"
+          :previousContainer="containersFiltered[(index as number) - 1]"
           :container="container"
           :oldest-first="oldestFirst"
           @delete-container="deleteContainer(container)"
@@ -40,7 +40,7 @@
     </v-row>
     <v-row v-if="containersFiltered.length === 0">
       <v-col>
-        <v-card variant="flat" class="text-center pa-8 my-4">
+        <v-card variant="flat" class="text-center pa-4 pa-sm-8 my-4">
           <v-icon size="64" color="secondary" class="mb-4">mdi-docker</v-icon>
           <div class="text-h6">No containers found</div>
           <div class="text-body-2 text-medium-emphasis mt-2">Containers will appear here once watchers detect them</div>

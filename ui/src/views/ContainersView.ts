@@ -3,29 +3,7 @@ import ContainerFilter from "@/components/ContainerFilter.vue";
 import { deleteContainer, getAllContainers } from "@/services/container";
 import { defineComponent } from "vue";
 import type { ComponentPublicInstance } from "vue";
-
-interface Container {
-  id: string;
-  displayName: string;
-  watcher: string;
-  updateAvailable: boolean;
-  updateKind: {
-    kind: string;
-    semverDiff?: string;
-    remoteValue: string;
-  };
-  image: {
-    registry: {
-      name: string;
-    };
-    created: string;
-    os: string;
-  };
-  result: {
-    created?: string;
-  };
-  labels?: Record<string, string>;
-}
+import type { Container } from "@/types/container";
 
 export default defineComponent({
   components: {
@@ -47,9 +25,9 @@ export default defineComponent({
   watch: {},
   computed: {
     allContainerLabels() {
-      const allLabels = this.containers.reduce((acc, container) => {
+      const allLabels = this.containers.reduce((acc: string[], container) => {
         return [...acc, ...Object.keys(container.labels ?? {})];
-      }, []);
+      }, [] as string[]);
       return [...new Set(allLabels)].sort();
     },
     registries() {

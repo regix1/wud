@@ -1,7 +1,9 @@
 <template>
   <v-navigation-drawer
-    :rail="mini"
-    permanent
+    :rail="!isMobile && mini"
+    :permanent="!isMobile"
+    :temporary="isMobile"
+    v-model="drawerOpen"
     :disable-route-watcher="true"
     class="nav-drawer"
   >

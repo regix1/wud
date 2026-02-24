@@ -2,14 +2,14 @@
   <div>
     <div
       v-if="
-        this.groupingLabel &&
-        this.previousContainer?.labels?.[this.groupingLabel] !==
-          this.container.labels?.[this.groupingLabel]
+        groupingLabel &&
+        previousContainer?.labels?.[groupingLabel] !==
+          container.labels?.[groupingLabel]
       "
     >
       <div class="text-h6">
-        {{ this.groupingLabel }} =
-        {{ this.container.labels?.[this.groupingLabel] ?? "(empty)" }}
+        {{ groupingLabel }} =
+        {{ container.labels?.[groupingLabel] ?? "(empty)" }}
       </div>
       <v-divider class="pb-3"></v-divider>
     </div>
@@ -88,7 +88,7 @@
             v-if="smAndUp && oldestFirst"
             class="text-caption"
           >
-            {{ this.$filters.date(container.image.created) }}
+            {{ $filters.date(container.image.created) }}
           </span>
 
           <v-icon>{{
@@ -96,6 +96,7 @@
           }}</v-icon>
         </div>
       </v-card-title>
+        <v-expand-transition>
         <div v-if="showDetail">
           <v-tabs
             :stacked="smAndUp"
@@ -157,7 +158,7 @@
               <v-col class="text-center">
                 <v-dialog
                   v-model="dialogDelete"
-                  width="500"
+                  :width="smAndUp ? 500 : '95vw'"
                   v-if="deleteEnabled"
                 >
                   <template v-slot:activator="{ props }">
@@ -217,6 +218,7 @@
             </v-row>
           </v-card-actions>
         </div>
+        </v-expand-transition>
     </v-card>
   </div>
 </template>
@@ -235,6 +237,8 @@
 .text-truncate-custom {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .v-card {

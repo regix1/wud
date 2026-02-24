@@ -7,6 +7,8 @@ import ContainerTriggers from "@/components/ContainerTriggers.vue";
 import ContainerUpdate from "@/components/ContainerUpdate.vue";
 import IconRenderer from "@/components/IconRenderer.vue";
 import { defineComponent } from "vue";
+import type { PropType } from "vue";
+import type { Container } from "@/types/container";
 
 export default defineComponent({
   setup() {
@@ -24,12 +26,13 @@ export default defineComponent({
 
   props: {
     container: {
-      type: Object,
+      type: Object as PropType<Container>,
       required: true,
     },
     previousContainer: {
-      type: Object,
+      type: Object as PropType<Container>,
       required: false,
+      default: undefined,
     },
     groupingLabel: {
       type: String,
@@ -69,7 +72,7 @@ export default defineComponent({
     newVersion() {
       let newVersion = "unknown";
       if (
-        this.container.result.created &&
+        this.container.result?.created &&
         this.container.image.created !== this.container.result.created
       ) {
         newVersion = this.$filters.dateTime(

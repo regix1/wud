@@ -1,7 +1,12 @@
 import { runTrigger } from "@/services/trigger";
 import { defineComponent } from "vue";
+import { useDisplay } from "vuetify";
 
 export default defineComponent({
+  setup() {
+    const { smAndUp } = useDisplay();
+    return { smAndUp };
+  },
   components: {},
   props: {
     trigger: {

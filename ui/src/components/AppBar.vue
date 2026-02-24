@@ -1,5 +1,6 @@
 <template>
   <v-app-bar flat rounded="0" border="b thin" density="compact">
+    <v-app-bar-nav-icon v-if="isMobile" @click="$emit('toggle-nav')" />
     <v-toolbar-title
       v-if="viewName && 'home'.toLowerCase() !== viewName.toLowerCase()"
       class="text-h6 text-capitalize ma-0 pl-4"

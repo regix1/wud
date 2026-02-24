@@ -1,7 +1,8 @@
 <template>
   <v-card-text>
-    <table class="config-table">
-      <tbody>
+    <div class="table-scroll-wrapper">
+      <table class="config-table">
+        <tbody>
         <tr>
           <td class="text-capitalize text-medium-emphasis config-key">
             <v-icon size="small" color="secondary" class="mr-2">mdi-identifier</v-icon>
@@ -105,14 +106,19 @@
             <a :href="container.link" target="_blank">{{ container.link }}</a>
           </td>
         </tr>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </v-card-text>
 </template>
 
 <script lang="ts" src="./ContainerDetail.ts"></script>
 
 <style scoped>
+.table-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .config-table {
   width: 100%;
   background: transparent;
@@ -123,8 +129,7 @@
   padding: 6px 12px !important;
 }
 .config-key {
-  width: 180px;
-  white-space: nowrap;
+  width: 120px;
   font-weight: 500;
 }
 .config-value {

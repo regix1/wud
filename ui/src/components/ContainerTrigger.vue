@@ -4,7 +4,7 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-bell-ring</v-icon>
       </template>
-      <v-list-item-title class="d-flex align-center gap-sm">
+      <v-list-item-title class="d-flex align-center gap-sm flex-wrap">
         <router-link to="/configuration/triggers" class="text-decoration-none">
           <v-chip label size="small" color="info" variant="tonal" class="text-capitalize">{{ trigger.type }}</v-chip>
         </router-link>

@@ -1,8 +1,9 @@
 <template>
   <div>
     <v-card-text v-if="updateAvailable">
-      <table class="config-table">
-        <tbody>
+      <div class="table-scroll-wrapper">
+        <table class="config-table">
+          <tbody>
           <!-- Row: Tag (conditional on result.tag) -->
           <tr v-if="result.tag">
             <td class="text-medium-emphasis config-key">
@@ -69,8 +70,9 @@
               </v-chip>
             </td>
           </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </v-card-text>
     <v-card-text v-else class="text-center pa-8">
       <v-icon size="48" color="success" class="mb-2">mdi-check-circle-outline</v-icon>
@@ -82,9 +84,10 @@
 <script lang="ts" src="./ContainerUpdate.ts"></script>
 
 <style scoped>
+.table-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .config-table { width: 100%; background: transparent; border-collapse: collapse; }
 .config-table td { border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important; padding: 6px 12px !important; }
-.config-key { width: 180px; white-space: nowrap; font-weight: 500; }
+.config-key { width: 120px; font-weight: 500; }
 .config-value { word-break: break-word; }
 .config-code { background: rgba(var(--v-theme-on-surface), 0.06); padding: 2px 8px; border-radius: 4px; font-size: 0.8125rem; font-family: 'Roboto Mono', monospace; color: rgb(var(--v-theme-secondary)); }
 </style>

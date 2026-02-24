@@ -59,7 +59,7 @@
     <v-divider class="my-3" style="border-color: rgba(var(--v-theme-on-surface), 0.1);" />
 
     <v-row dense align="center" justify="space-between">
-      <v-col cols="auto" class="d-flex align-center ga-6">
+      <v-col cols="12" sm="auto" class="d-flex align-center ga-6">
         <v-switch
           label="Update available"
           v-model="updateAvailableLocal"
@@ -79,7 +79,7 @@
           class="flex-grow-0"
         />
       </v-col>
-      <v-col cols="auto">
+      <v-col cols="12" sm="auto">
         <v-btn
           color="secondary"
           @click.stop="refreshAllContainers"

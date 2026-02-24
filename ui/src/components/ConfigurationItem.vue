@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title
       @click="collapse()"
-      class="clickable-header pa-3 d-flex align-center bg-surface"
+      class="clickable-header pa-3 d-flex align-center bg-surface flex-wrap"
     >
       <div class="text-body-2">
         <v-chip label color="info" variant="tonal">{{ item.type }}</v-chip>
@@ -13,52 +13,56 @@
       <IconRenderer :icon="item.icon" :size="24" :margin-right="8" />
       <v-icon>{{ showDetail ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
     </v-card-title>
+      <v-expand-transition>
       <v-card-text v-if="showDetail">
-        <table class="config-table" v-if="configurationItems.length > 0">
-          <tbody>
-            <tr v-for="configurationItem in configurationItems" :key="configurationItem.key">
-              <td class="text-capitalize text-medium-emphasis config-key">
-                {{ configurationItem.key }}
-              </td>
-              <td class="config-value">
-                <!-- Boolean values: colored chip -->
-                <v-chip
-                  v-if="typeof configurationItem.value === 'boolean'"
-                  :color="configurationItem.value ? 'success' : 'error'"
-                  size="x-small"
-                  label
-                  variant="tonal"
-                >
-                  {{ configurationItem.value }}
-                </v-chip>
-                <!-- Number values: info chip -->
-                <v-chip
-                  v-else-if="typeof configurationItem.value === 'number'"
-                  color="info"
-                  size="x-small"
-                  label
-                  variant="tonal"
-                >
-                  {{ configurationItem.value }}
-                </v-chip>
-                <!-- Empty/null: muted text -->
-                <span v-else-if="configurationItem.value === undefined || configurationItem.value === null || configurationItem.value === ''"
-                  class="text-disabled font-italic"
-                >
-                  empty
-                </span>
-                <!-- String values: check if it looks like a path/command -->
-                <code v-else-if="looksLikeCode(configurationItem.value)" class="config-code">
-                  {{ configurationItem.value }}
-                </code>
-                <!-- Default: regular text -->
-                <span v-else class="text-body-2">{{ configurationItem.value }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-if="configurationItems.length > 0" class="table-scroll-wrapper">
+          <table class="config-table">
+            <tbody>
+              <tr v-for="configurationItem in configurationItems" :key="configurationItem.key">
+                <td class="text-capitalize text-medium-emphasis config-key">
+                  {{ configurationItem.key }}
+                </td>
+                <td class="config-value">
+                  <!-- Boolean values: colored chip -->
+                  <v-chip
+                    v-if="typeof configurationItem.value === 'boolean'"
+                    :color="configurationItem.value ? 'success' : 'error'"
+                    size="x-small"
+                    label
+                    variant="tonal"
+                  >
+                    {{ configurationItem.value }}
+                  </v-chip>
+                  <!-- Number values: info chip -->
+                  <v-chip
+                    v-else-if="typeof configurationItem.value === 'number'"
+                    color="info"
+                    size="x-small"
+                    label
+                    variant="tonal"
+                  >
+                    {{ configurationItem.value }}
+                  </v-chip>
+                  <!-- Empty/null: muted text -->
+                  <span v-else-if="configurationItem.value === undefined || configurationItem.value === null || configurationItem.value === ''"
+                    class="text-disabled font-italic"
+                  >
+                    empty
+                  </span>
+                  <!-- String values: check if it looks like a path/command -->
+                  <code v-else-if="looksLikeCode(configurationItem.value)" class="config-code">
+                    {{ configurationItem.value }}
+                  </code>
+                  <!-- Default: regular text -->
+                  <span v-else class="text-body-2">{{ configurationItem.value }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <span v-else>Default configuration</span>
       </v-card-text>
+      </v-expand-transition>
   </v-card>
 </template>
 
@@ -90,9 +94,13 @@
   padding: 6px 12px !important;
 }
 
+.table-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .config-key {
-  width: 140px;
-  white-space: nowrap;
+  width: 110px;
   font-weight: 500;
 }
 

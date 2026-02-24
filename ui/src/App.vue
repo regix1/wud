@@ -6,9 +6,9 @@
       :level="snackbarLevel"
     />
 
-    <navigation-drawer v-if="authenticated" />
+    <navigation-drawer v-if="authenticated" v-model="drawerOpen" />
 
-    <app-bar v-if="authenticated" :user="user" />
+    <app-bar v-if="authenticated" :user="user" @toggle-nav="toggleNav" />
 
     <!-- Sizes your content based upon application components -->
     <v-main>
@@ -37,50 +37,27 @@
 </style>
 
 <style>
-/* Dropdown/menu open & close transitions */
-.v-overlay__content {
-  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* Vuetify menu/select/autocomplete dropdown transitions */
+.v-menu-transition-enter-active,
+.v-menu-transition-leave-active {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   transform-origin: top center;
 }
 
-.v-overlay--active .v-overlay__content {
-  opacity: 1;
-  transform: scaleY(1);
+.v-menu-transition-enter-from {
+  opacity: 0 !important;
+  transform: scaleY(0.8) translateY(-8px) !important;
 }
 
-/* Select/autocomplete dropdown list animation */
-.v-select__content,
-.v-autocomplete__content {
-  transform-origin: top center;
+.v-menu-transition-leave-to {
+  opacity: 0 !important;
+  transform: scaleY(0.8) translateY(-8px) !important;
 }
 
-.v-menu > .v-overlay__content > .v-list {
-  animation: dropdown-in 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes dropdown-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Dropdown list items stagger animation */
-.v-menu .v-list-item {
-  animation: item-fade-in 0.12s ease both;
-}
-
-@keyframes item-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.v-menu-transition-enter-to,
+.v-menu-transition-leave-from {
+  opacity: 1 !important;
+  transform: scaleY(1) translateY(0) !important;
 }
 </style>

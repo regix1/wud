@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row v-if="triggers.length > 0">
-      <v-col v-for="trigger in triggers" :key="trigger.id" lg="6" sm="12">
+      <v-col v-for="trigger in triggers" :key="trigger.id" cols="12" md="6">
         <container-trigger
           :trigger="trigger"
           :update-available="container.updateAvailable"

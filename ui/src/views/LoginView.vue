@@ -1,6 +1,6 @@
 <template>
   <v-container class="login-background">
-    <v-dialog v-model="showDialog" width="400px" persistent>
+    <v-dialog v-model="showDialog" :width="smAndUp ? '400px' : '95vw'" persistent>
       <v-card elevation="2" class="login-card">
         <div class="pt-6 pb-2 px-4">
           <div class="d-flex justify-center mb-4">
