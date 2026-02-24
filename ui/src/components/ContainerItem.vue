@@ -16,7 +16,7 @@
     <v-card :class="{ 'update-available': container.updateAvailable }">
       <v-card-title
         @click="collapseDetail()"
-        class="clickable-header pa-3 d-flex align-center bg-surface"
+        class="clickable-header pa-3 d-flex align-center"
       >
         <div
           class="text-body-2 d-flex align-center gap-sm"
@@ -99,34 +99,37 @@
         <v-expand-transition>
         <div v-if="showDetail">
           <v-tabs
-            :stacked="smAndUp"
             fixed-tabs
             v-model="tab"
             ref="tabs"
+            color="info"
+            slider-color="info"
+            density="comfortable"
+            class="detail-tabs"
           >
             <v-tab v-if="container.result">
+              <v-icon start size="small">mdi-package-down</v-icon>
               <span v-if="smAndUp">Update</span>
-              <v-icon>mdi-package-down</v-icon>
             </v-tab>
             <v-tab>
+              <v-icon start size="small">mdi-bell-ring</v-icon>
               <span v-if="smAndUp">Triggers</span>
-              <v-icon>mdi-bell-ring</v-icon>
             </v-tab>
             <v-tab>
+              <v-icon start size="small">mdi-package-variant-closed</v-icon>
               <span v-if="smAndUp">Image</span>
-              <v-icon>mdi-package-variant-closed</v-icon>
             </v-tab>
             <v-tab>
-              <span v-if="smAndUp">Container</span>
               <IconRenderer
                 :icon="container.displayIcon"
-                :size="24"
-                :margin-right="0"
+                :size="18"
+                :margin-right="smAndUp ? 6 : 0"
               />
+              <span v-if="smAndUp">Container</span>
             </v-tab>
             <v-tab v-if="container.error">
+              <v-icon start size="small">mdi-alert</v-icon>
               <span v-if="smAndUp">Error</span>
-              <v-icon>mdi-alert</v-icon>
             </v-tab>
           </v-tabs>
 
@@ -253,5 +256,28 @@
 
 .update-available {
   border-left: 3px solid rgb(var(--v-theme-warning));
+}
+
+/* Detail tabs styling */
+.detail-tabs {
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.detail-tabs :deep(.v-tab) {
+  text-transform: none;
+  font-weight: 400;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  opacity: 0.6;
+  min-height: 42px;
+}
+
+.detail-tabs :deep(.v-tab--selected) {
+  font-weight: 500;
+  opacity: 1;
+}
+
+.detail-tabs :deep(.v-tabs-slider) {
+  height: 2px;
 }
 </style>
