@@ -68,7 +68,7 @@ jobs:
   # Phase 2: Build Docker images natively per-arch
   # ──────────────────────────────────────────────
   build:
-    name: Build (${{ matrix.platform }})
+    name: Build
     needs: test
     if: github.event_name == 'push'
     strategy:
