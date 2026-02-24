@@ -1,24 +1,26 @@
-import { getUser, loginBasic, logout, getStrategies } from '@/services/auth';
+import { getUser, loginBasic, logout, getStrategies, clearUserCache } from '@/services/auth';
 
 // Mock fetch globally
-global.fetch = jest.fn();
+const fetchMock = jest.fn();
+global.fetch = fetchMock;
 
 describe('Auth Service', () => {
   beforeEach(() => {
-    fetch.mockClear();
+    fetchMock.mockReset();
+    clearUserCache();
   });
 
   describe('getUser', () => {
     it('returns user data when authenticated', async () => {
       const mockUser = { username: 'testuser', roles: ['admin'] };
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockUser
       });
 
       const user = await getUser();
 
-      expect(fetch).toHaveBeenCalledWith('/auth/user', {
+      expect(fetchMock).toHaveBeenCalledWith('/auth/user', {
         redirect: 'manual',
         credentials: 'include'
       });
@@ -26,7 +28,7 @@ describe('Auth Service', () => {
     });
 
     it('returns undefined when not authenticated', async () => {
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         status: 401
       });
@@ -37,7 +39,7 @@ describe('Auth Service', () => {
     });
 
     it('handles network errors gracefully', async () => {
-      fetch.mockRejectedValueOnce(new Error('Network error'));
+      fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
       const user = await getUser();
 
@@ -48,14 +50,14 @@ describe('Auth Service', () => {
   describe('loginBasic', () => {
     it('performs basic authentication successfully', async () => {
       const mockUser = { username: 'testuser' };
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockUser
       });
 
       const user = await loginBasic('testuser', 'testpass');
 
-      expect(fetch).toHaveBeenCalledWith('/auth/login', {
+      expect(fetchMock).toHaveBeenCalledWith('/auth/login', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -71,7 +73,7 @@ describe('Auth Service', () => {
     });
 
     it('handles login failure', async () => {
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         status: 401,
         json: async () => ({ error: 'Invalid credentials' })
@@ -86,14 +88,14 @@ describe('Auth Service', () => {
   describe('logout', () => {
     it('logs out user successfully', async () => {
       const mockResponse = { success: true };
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse
       });
 
       const result = await logout();
 
-      expect(fetch).toHaveBeenCalledWith('/auth/logout', {
+      expect(fetchMock).toHaveBeenCalledWith('/auth/logout', {
         method: 'POST',
         credentials: 'include',
         redirect: 'manual'
@@ -108,14 +110,14 @@ describe('Auth Service', () => {
         { name: 'basic', type: 'basic' },
         { name: 'oidc', type: 'oidc' }
       ];
-      fetch.mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockStrategies
       });
 
       const strategies = await getStrategies();
 
-      expect(fetch).toHaveBeenCalledWith('/auth/strategies', {
+      expect(fetchMock).toHaveBeenCalledWith('/auth/strategies', {
         credentials: 'include'
       });
       expect(strategies).toEqual(mockStrategies);
