@@ -1,8 +1,27 @@
 import { inject, defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
 import { getOidcRedirection, getStrategies } from "@/services/auth";
 import LoginBasic from "@/components/LoginBasic.vue";
 import LoginOidc from "@/components/LoginOidc.vue";
 import logo from "@/assets/wud-logo.svg";
+
+interface AuthStrategy {
+  type: string;
+  name: string;
+  redirect?: boolean;
+}
+
+interface EventBus {
+  emit: (event: string, ...args: unknown[]) => void;
+  on: (event: string, callback: (...args: unknown[]) => void) => void;
+  off: (event: string, callback: (...args: unknown[]) => void) => void;
+}
+
+interface LoginViewInstance {
+  strategies: AuthStrategy[];
+  isSupportedStrategy: (strategy: AuthStrategy) => boolean;
+  eventBus?: EventBus;
+}
 
 export default defineComponent({
   components: {
@@ -10,7 +29,7 @@ export default defineComponent({
     LoginOidc,
   },
   setup() {
-    const eventBus = inject("eventBus") as any;
+    const eventBus = inject("eventBus") as EventBus;
     return {
       eventBus,
     };
@@ -18,7 +37,7 @@ export default defineComponent({
   data() {
     return {
       logo,
-      strategies: [] as any[],
+      strategies: [] as AuthStrategy[],
       strategySelected: 0,
       showDialog: true,
     };
@@ -30,7 +49,7 @@ export default defineComponent({
      * @param strategy
      * @returns {boolean}
      */
-    isSupportedStrategy(strategy: any) {
+    isSupportedStrategy(strategy: AuthStrategy) {
       switch (strategy.type) {
         case "basic":
           return true;
@@ -61,34 +80,34 @@ export default defineComponent({
       const strategies = await getStrategies();
 
       // If anonymous auth is enabled then no need to login => go home
-      if (strategies.find((strategy) => strategy.type === "anonymous")) {
+      if (strategies.find((strategy: AuthStrategy) => strategy.type === "anonymous")) {
         next("/");
       }
 
       // If oidc strategy supporting redirect
       const oidcWithRedirect = strategies.find(
-        (strategy) => strategy.type === "oidc" && strategy.redirect,
+        (strategy: AuthStrategy) => strategy.type === "oidc" && strategy.redirect,
       );
       if (oidcWithRedirect) {
         const redirection = await getOidcRedirection(oidcWithRedirect.name);
         window.location.href = redirection.url;
       } else {
         // Filter on supported auth for UI
-        next(async (vm: any) => {
-          vm.strategies = strategies.filter(vm.isSupportedStrategy);
+        next(async (vm: ComponentPublicInstance) => {
+          const instance = vm as unknown as LoginViewInstance;
+          instance.strategies = strategies.filter(instance.isSupportedStrategy);
         });
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Note: In beforeRouteEnter, 'this' is not available, so we'll handle this in the component
-      next((vm: any) => {
-        if (vm.eventBus) {
-          vm.eventBus.emit(
+      next((vm: ComponentPublicInstance) => {
+        const instance = vm as unknown as LoginViewInstance;
+        if (instance.eventBus) {
+          instance.eventBus.emit(
             "notify",
-            `Error when trying to get the authentication strategies (${e.message})`,
+            `Error when trying to get the authentication strategies (${(e as Error).message})`,
             "error",
           );
-        } else {
-          console.error(`Error when trying to get the authentication strategies (${e.message})`);
         }
       });
     }

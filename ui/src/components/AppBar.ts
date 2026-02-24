@@ -1,6 +1,7 @@
 import { computed, inject, defineComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { logout } from "@/services/auth";
+import type { useEventBus } from "@/composables/useEventBus";
 
 export default defineComponent({
   props: {
@@ -12,7 +13,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const eventBus = inject("eventBus") as any;
+    const eventBus = inject("eventBus") as ReturnType<typeof useEventBus>;
 
     const viewName = computed(() => {
       return route.name;
@@ -28,10 +29,11 @@ export default defineComponent({
             name: "login",
           });
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
         eventBus.emit(
           "notify",
-          `Error when trying to logout (${e.message})`,
+          `Error when trying to logout (${message})`,
           "error",
         );
       }

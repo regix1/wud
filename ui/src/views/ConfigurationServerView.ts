@@ -3,6 +3,13 @@ import { getServer } from "@/services/server";
 import { getLog } from "@/services/log";
 import { getStore } from "@/services/store";
 import { defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
+
+interface ServerViewInstance {
+  server: Record<string, unknown>;
+  store: Record<string, unknown>;
+  log: Record<string, unknown>;
+}
 
 export default defineComponent({
   components: {
@@ -10,9 +17,9 @@ export default defineComponent({
   },
   data() {
     return {
-      server: {} as any,
-      store: {} as any,
-      log: {} as any,
+      server: {} as Record<string, unknown>,
+      store: {} as Record<string, unknown>,
+      log: {} as Record<string, unknown>,
     };
   },
   computed: {
@@ -48,16 +55,17 @@ export default defineComponent({
       const store = await getStore();
       const log = await getLog();
 
-      next((vm: any) => {
-        vm.server = server;
-        vm.store = store;
-        vm.log = log;
+      next((vm: ComponentPublicInstance) => {
+        const instance = vm as unknown as ServerViewInstance;
+        instance.server = server;
+        instance.store = store;
+        instance.log = log;
       });
-    } catch (e: any) {
-      next((vm: any) => {
+    } catch (e: unknown) {
+      next((vm: ComponentPublicInstance) => {
         vm.$eventBus.emit(
           "notify",
-          `Error when trying to load the state configuration (${e.message})`,
+          `Error when trying to load the state configuration (${(e as Error).message})`,
           "error",
         );
       });

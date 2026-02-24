@@ -19,15 +19,21 @@ import '@vue/runtime-core';
 declare module '@vue/runtime-core' {
   export interface ComponentCustomProperties {
     $eventBus: {
-      emit: (event: string, ...args: any[]) => void;
-      on: (event: string, callback: (...args: any[]) => void) => void;
-      off: (event: string, callback: (...args: any[]) => void) => void;
+      emit: (event: string, ...args: unknown[]) => void;
+      on: (event: string, callback: (...args: unknown[]) => void) => void;
+      off: (event: string, callback: (...args: unknown[]) => void) => void;
     };
-    
+
     $filters: {
       short: (str: string, length: number) => string;
       dateTime: (date: string) => string;
       date: (date: string) => string;
+    };
+
+    $serverConfig?: {
+      feature?: {
+        delete?: boolean;
+      };
     };
   }
 }

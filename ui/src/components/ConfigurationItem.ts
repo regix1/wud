@@ -45,7 +45,7 @@ export default defineComponent({
     collapse() {
       this.showDetail = !this.showDetail;
     },
-    formatValue(value: any) {
+    formatValue(value: unknown) {
       if (value === undefined || value === null || value === "") {
         return "<empty>";
       }

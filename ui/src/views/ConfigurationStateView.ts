@@ -1,6 +1,7 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
 import { getStore } from "@/services/store";
 import { defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
 
 export default defineComponent({
   components: {
@@ -8,7 +9,7 @@ export default defineComponent({
   },
   data() {
     return {
-      state: {} as any,
+      state: {} as Record<string, unknown>,
     };
   },
   computed: {
@@ -24,12 +25,12 @@ export default defineComponent({
   async beforeRouteEnter(to, from, next) {
     try {
       const state = await getStore();
-      next((vm: any) => (vm.state = state));
-    } catch (e: any) {
-      next((vm: any) => {
+      next((vm: ComponentPublicInstance) => ((vm as unknown as { state: Record<string, unknown> }).state = state));
+    } catch (e: unknown) {
+      next((vm: ComponentPublicInstance) => {
         vm.$eventBus.emit(
           "notify",
-          `Error when trying to load the state configuration (${e.message})`,
+          `Error when trying to load the state configuration (${(e as Error).message})`,
           "error",
         );
       });

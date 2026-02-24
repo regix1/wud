@@ -508,16 +508,26 @@ class Docker extends Watcher {
                     this.log.debug(err);
                 }
             } else {
-                let chunks: Buffer[] = [];
+                let buffer = '';
                 const collectChunks = (chunk: Buffer) => {
-                    chunks.push(chunk);
-                    if (chunk.toString().endsWith('\n')) {
-                        const dockerEventChunk = Buffer.concat(chunks);
-                        this.onDockerEvent(dockerEventChunk);
-                        chunks = [];
+                    buffer += chunk.toString();
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() ?? '';
+                    for (const line of lines) {
+                        if (line.trim().length > 0) {
+                            this.onDockerEvent(Buffer.from(line));
+                        }
                     }
                 };
                 stream.on('data', collectChunks);
+                stream.on('error', (err: Error) => {
+                    this.log.warn(`Docker event stream error: ${err.message}`);
+                    setTimeout(() => this.listenDockerEvents(), 5000);
+                });
+                stream.on('end', () => {
+                    this.log.warn('Docker event stream ended, reconnecting...');
+                    setTimeout(() => this.listenDockerEvents(), 5000);
+                });
             }
         });
     }
@@ -545,13 +555,17 @@ class Docker extends Watcher {
         if (action === 'destroy' || action === 'create') {
             await this.watchCronDebounced();
         } else {
+            // Fast-exit for containers not in the watched store
+            const containerFound = storeContainer.getContainer(containerId);
+            if (!containerFound) {
+                return;
+            }
             // Update container state in db if so
             try {
                 const container =
                     await this.dockerApi.getContainer(containerId);
                 const containerInspect = await container.inspect();
                 const newStatus = containerInspect.State.Status;
-                const containerFound = storeContainer.getContainer(containerId);
                 if (containerFound) {
                     // Child logger for the container to process
                     const logContainer = this.log.child({
@@ -862,6 +876,11 @@ class Docker extends Watcher {
         ) {
             this.ensureLogger();
             this.log.debug(`Container ${containerInStore.id} already in store`);
+            // Re-evaluate wud.watch.digest label in case it changed
+            const digestLabelValue = container.Labels ? container.Labels[wudWatchDigest] : undefined;
+            if (digestLabelValue !== undefined && digestLabelValue !== '') {
+                containerInStore.image.digest.watch = digestLabelValue.toLowerCase() === 'true';
+            }
             return containerInStore;
         }
 

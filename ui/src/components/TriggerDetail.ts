@@ -53,18 +53,19 @@ export default defineComponent({
           triggerName: this.trigger.name,
           container: this.container,
         });
-        (this as any).$eventBus.emit("notify", "Trigger executed with success");
-      } catch (err: any) {
-        (this as any).$eventBus.emit(
+        this.$eventBus.emit("notify", "Trigger executed with success");
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.$eventBus.emit(
           "notify",
-          `Trigger executed with error (${err.message}})`,
+          `Trigger executed with error (${message}})`,
           "error",
         );
       } finally {
         this.isTriggering = false;
       }
     },
-    formatValue(value: any) {
+    formatValue(value: unknown) {
       if (value === undefined || value === null || value === "") {
         return "<empty>";
       }

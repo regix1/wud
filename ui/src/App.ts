@@ -14,6 +14,7 @@ import SnackBar from "@/components/SnackBar.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import { getServer } from "@/services/server";
 import { useRoute } from "vue-router";
+import { useEventBus } from "@/composables/useEventBus";
 
 export default defineComponent({
   components: {
@@ -24,7 +25,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const eventBus = inject("eventBus") as any;
+    const eventBus = inject("eventBus") as ReturnType<typeof useEventBus>;
     const instance = getCurrentInstance();
 
     const snackbarMessage = ref("");
@@ -47,7 +48,7 @@ export default defineComponent({
       return user.value !== undefined;
     });
 
-    const onAuthenticated = (userData: any) => {
+    const onAuthenticated = (userData: Record<string, unknown>) => {
       user.value = userData;
     };
 
@@ -84,8 +85,8 @@ export default defineComponent({
               onAuthenticated(currentUser);
             }
           }
-        } catch (e) {
-          console.log("Fallback auth check failed:", e);
+        } catch {
+          //
         }
       }
     });

@@ -1,20 +1,28 @@
-// @ts-nocheck
 import { Gauge, register } from 'prom-client';
 
-let watchContainerGauge;
+type WatcherLabels = 'type' | 'name';
+
+interface WatchContainerMetric {
+    set(labels: Record<WatcherLabels, string>, value: number): void;
+}
+
+const noopGauge: WatchContainerMetric = {
+    set() {},
+};
+
+let watchContainerGauge: Gauge<WatcherLabels> | undefined;
 
 export function init() {
-    // Replace gauge if init is called more than once
     if (watchContainerGauge) {
-        register.removeSingleMetric(watchContainerGauge.name);
+        register.removeSingleMetric('wud_watcher_total');
     }
-    watchContainerGauge = new Gauge({
+    watchContainerGauge = new Gauge<WatcherLabels>({
         name: 'wud_watcher_total',
         help: 'The number of watched containers',
         labelNames: ['type', 'name'],
     });
 }
 
-export function getWatchContainerGauge() {
-    return watchContainerGauge;
+export function getWatchContainerGauge(): WatchContainerMetric {
+    return watchContainerGauge ?? noopGauge;
 }

@@ -1,6 +1,7 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
 import { getLog } from "@/services/log";
 import { defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
 
 export default defineComponent({
   components: {
@@ -8,7 +9,7 @@ export default defineComponent({
   },
   data() {
     return {
-      log: {} as any,
+      log: {} as Record<string, unknown>,
     };
   },
 
@@ -27,12 +28,12 @@ export default defineComponent({
   async beforeRouteEnter(to, from, next) {
     try {
       const log = await getLog();
-      next((vm: any) => (vm.log = log));
-    } catch (e: any) {
-      next((vm: any) => {
+      next((vm: ComponentPublicInstance) => ((vm as unknown as { log: Record<string, unknown> }).log = log));
+    } catch (e: unknown) {
+      next((vm: ComponentPublicInstance) => {
         vm.$eventBus.emit(
           "notify",
-          `Error when trying to load the log configuration (${e.message})`,
+          `Error when trying to load the log configuration (${(e as Error).message})`,
           "error",
         );
       });

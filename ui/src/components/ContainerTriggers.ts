@@ -15,7 +15,7 @@ export default defineComponent({
 
   data() {
     return {
-      triggers: [] as any[],
+      triggers: [] as Array<{ id: string; type: string; name: string; [key: string]: unknown }>,
     };
   },
 

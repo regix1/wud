@@ -1,20 +1,28 @@
-// @ts-nocheck
 import { Counter, register } from 'prom-client';
 
-let triggerCounter;
+type TriggerLabels = 'type' | 'name' | 'status';
+
+interface TriggerCounterMetric {
+    inc(labels: Record<TriggerLabels, string>, delta?: number): void;
+}
+
+const noopCounter: TriggerCounterMetric = {
+    inc() {},
+};
+
+let triggerCounter: Counter<TriggerLabels> | undefined;
 
 export function init() {
-    // Replace counter if init is called more than once
     if (triggerCounter) {
-        register.removeSingleMetric(triggerCounter.name);
+        register.removeSingleMetric('wud_trigger_count');
     }
-    triggerCounter = new Counter({
+    triggerCounter = new Counter<TriggerLabels>({
         name: 'wud_trigger_count',
         help: 'Total count of trigger events',
         labelNames: ['type', 'name', 'status'],
     });
 }
 
-export function getTriggerCounter() {
-    return triggerCounter;
+export function getTriggerCounter(): TriggerCounterMetric {
+    return triggerCounter ?? noopCounter;
 }

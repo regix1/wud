@@ -72,7 +72,7 @@ export default defineComponent({
         this.container.result.created &&
         this.container.image.created !== this.container.result.created
       ) {
-        newVersion = (this as any).$filters.dateTime(
+        newVersion = this.$filters.dateTime(
           this.container.result.created,
         );
       }
@@ -80,7 +80,7 @@ export default defineComponent({
         newVersion = this.container.updateKind.remoteValue;
       }
       if (this.container.updateKind.kind === "digest") {
-        newVersion = (this as any).$filters.short(newVersion, 15);
+        newVersion = this.$filters.short(newVersion, 15);
       }
       return newVersion;
     },
@@ -114,7 +114,7 @@ export default defineComponent({
 
     copyToClipboard(kind: string, value: string) {
       navigator.clipboard.writeText(value);
-      (this as any).$eventBus.emit("notify", `${kind} copied to clipboard`);
+      this.$eventBus.emit("notify", `${kind} copied to clipboard`);
     },
 
     collapseDetail() {
@@ -124,8 +124,9 @@ export default defineComponent({
       }
 
       // Hack because of a render bug on tabs inside a collapsible element
-      if ((this.$refs.tabs as any) && (this.$refs.tabs as any).onResize) {
-        (this.$refs.tabs as any).onResize();
+      const tabs = this.$refs.tabs as { onResize?: () => void } | undefined;
+      if (tabs && tabs.onResize) {
+        tabs.onResize();
       }
     },
 
@@ -135,6 +136,6 @@ export default defineComponent({
   },
 
   mounted() {
-    this.deleteEnabled = (this as any).$serverConfig?.feature?.delete || false;
+    this.deleteEnabled = this.$serverConfig?.feature?.delete || false;
   },
 });

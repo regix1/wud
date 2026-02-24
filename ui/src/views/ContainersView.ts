@@ -2,6 +2,30 @@ import ContainerItem from "@/components/ContainerItem.vue";
 import ContainerFilter from "@/components/ContainerFilter.vue";
 import { deleteContainer, getAllContainers } from "@/services/container";
 import { defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
+
+interface Container {
+  id: string;
+  displayName: string;
+  watcher: string;
+  updateAvailable: boolean;
+  updateKind: {
+    kind: string;
+    semverDiff?: string;
+    remoteValue: string;
+  };
+  image: {
+    registry: {
+      name: string;
+    };
+    created: string;
+    os: string;
+  };
+  result: {
+    created?: string;
+  };
+  labels?: Record<string, string>;
+}
 
 export default defineComponent({
   components: {
@@ -11,7 +35,7 @@ export default defineComponent({
 
   data() {
     return {
-      containers: [] as any[],
+      containers: [] as Container[],
       registrySelected: "",
       watcherSelected: "",
       updateKindSelected: "",
@@ -78,7 +102,7 @@ export default defineComponent({
           this.updateAvailableSelected ? container.updateAvailable : true,
         )
         .sort((a, b) => {
-          const getImageDate = (item: any) => new Date(item.image.created);
+          const getImageDate = (item: Container) => new Date(item.image.created);
 
           if (this.groupByLabel) {
             const aLabel = a.labels?.[this.groupByLabel];
@@ -88,13 +112,13 @@ export default defineComponent({
             if (!aLabel && bLabel) return 1;
 
             if (aLabel && bLabel) {
-              if (this.oldestFirst) return (getImageDate(a) as any) - (getImageDate(b) as any);
+              if (this.oldestFirst) return getImageDate(a).getTime() - getImageDate(b).getTime();
 
               return aLabel.localeCompare(bLabel);
             }
           }
 
-          if (this.oldestFirst) return (getImageDate(a) as any) - (getImageDate(b) as any);
+          if (this.oldestFirst) return getImageDate(a).getTime() - getImageDate(b).getTime();
           return a.displayName.localeCompare(b.displayName);
         });
       return filteredContainers;
@@ -127,7 +151,7 @@ export default defineComponent({
       this.updateQueryParams();
     },
     updateQueryParams() {
-      const query: any = {};
+      const query: Record<string, string> = {};
       if (this.registrySelected) {
         query["registry"] = this.registrySelected;
       }
@@ -148,20 +172,20 @@ export default defineComponent({
       }
       this.$router.push({ query });
     },
-    onRefreshAllContainers(containersRefreshed: any[]) {
+    onRefreshAllContainers(containersRefreshed: Container[]) {
       this.containers = containersRefreshed;
     },
-    removeContainerFromList(container: any) {
+    removeContainerFromList(container: Container) {
       this.containers = this.containers.filter((c) => c.id !== container.id);
     },
-    async deleteContainer(container: any) {
+    async deleteContainer(container: Container) {
       try {
         await deleteContainer(container.id);
         this.removeContainerFromList(container);
-      } catch (e: any) {
-        (this as any).$eventBus.emit(
+      } catch (e: unknown) {
+        this.$eventBus.emit(
           "notify",
-          `Error when trying to delete the container (${e.message})`,
+          `Error when trying to delete the container (${e instanceof Error ? e.message : String(e)})`,
           "error",
         );
       }
@@ -177,32 +201,41 @@ export default defineComponent({
     const groupByLabel = to.query["group-by-label"];
     try {
       const containers = await getAllContainers();
-      next((vm: any) => {
+      next((vm: ComponentPublicInstance) => {
+        const v = vm as ComponentPublicInstance & {
+          registrySelected: string;
+          watcherSelected: string;
+          updateKindSelected: string;
+          updateAvailableSelected: boolean;
+          oldestFirst: boolean;
+          groupByLabel: string;
+          containers: Container[];
+        };
         if (registrySelected) {
-          vm.registrySelected = registrySelected;
+          v.registrySelected = registrySelected as string;
         }
         if (watcherSelected) {
-          vm.watcherSelected = watcherSelected;
+          v.watcherSelected = watcherSelected as string;
         }
         if (updateKindSelected) {
-          vm.updateKindSelected = updateKindSelected;
+          v.updateKindSelected = updateKindSelected as string;
         }
         if (updateAvailable) {
-          vm.updateAvailableSelected = (updateAvailable as string).toLowerCase() === "true";
+          v.updateAvailableSelected = (updateAvailable as string).toLowerCase() === "true";
         }
         if (oldestFirst) {
-          vm.oldestFirst = (oldestFirst as string).toLowerCase() === "true";
+          v.oldestFirst = (oldestFirst as string).toLowerCase() === "true";
         }
         if (groupByLabel) {
-          vm.groupByLabel = groupByLabel;
+          v.groupByLabel = groupByLabel as string;
         }
-        vm.containers = containers;
+        v.containers = containers;
       });
-    } catch (e: any) {
-      next((vm: any) => {
+    } catch (e: unknown) {
+      next((vm: ComponentPublicInstance) => {
         vm.$eventBus.emit(
           "notify",
-          `Error when trying to get the containers (${e.message})`,
+          `Error when trying to get the containers (${e instanceof Error ? e.message : String(e)})`,
           "error",
         );
       });

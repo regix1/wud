@@ -7,7 +7,7 @@ export default defineComponent({
       username: "",
       password: "",
       rules: {
-        required: (value: any) => !!value || "Required",
+        required: (value: unknown) => !!value || "Required",
       },
     };
   },
@@ -33,7 +33,7 @@ export default defineComponent({
           await loginBasic(this.username, this.password);
           this.$emit("authentication-success");
         } catch (e) {
-          (this as any).$eventBus.emit("notify", "Username or password error", "error");
+          this.$eventBus.emit("notify", "Username or password error", "error");
         }
       }
     },

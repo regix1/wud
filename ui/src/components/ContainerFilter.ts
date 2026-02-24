@@ -80,12 +80,13 @@ export default defineComponent({
       this.isRefreshing = true;
       try {
         const body = await refreshAllContainers();
-        (this as any).$eventBus.emit("notify", "All containers refreshed");
+        this.$eventBus.emit("notify", "All containers refreshed");
         this.$emit("refresh-all-containers", body);
-      } catch (e: any) {
-        (this as any).$eventBus.emit(
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        this.$eventBus.emit(
           "notify",
-          `Error when trying to refresh all containers (${e.message})`,
+          `Error when trying to refresh all containers (${message})`,
           "error",
         );
       } finally {

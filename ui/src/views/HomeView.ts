@@ -3,6 +3,15 @@ import { getRegistryIcon, getAllRegistries } from "@/services/registry";
 import { getTriggerIcon, getAllTriggers } from "@/services/trigger";
 import { getWatcherIcon, getAllWatchers } from "@/services/watcher";
 import { defineComponent } from "vue";
+import type { ComponentPublicInstance } from "vue";
+
+interface HomeViewInstance {
+  containersCount: number;
+  containersToUpdateCount: number;
+  triggersCount: number;
+  watchersCount: number;
+  registriesCount: number;
+}
 
 export default defineComponent({
   data() {
@@ -34,19 +43,18 @@ export default defineComponent({
       const watchers = await getAllWatchers();
       const registries = await getAllRegistries();
       const triggers = await getAllTriggers();
-      next((vm: any) => {
-        vm.containersCount = containers.length;
-        vm.triggersCount = triggers.length;
-        vm.watchersCount = watchers.length;
-        vm.registriesCount = registries.length;
-        vm.containersToUpdateCount = containers.filter(
-          (container: any) => container.updateAvailable,
+      next((vm: ComponentPublicInstance) => {
+        const instance = vm as unknown as HomeViewInstance;
+        instance.containersCount = containers.length;
+        instance.triggersCount = triggers.length;
+        instance.watchersCount = watchers.length;
+        instance.registriesCount = registries.length;
+        instance.containersToUpdateCount = containers.filter(
+          (container: Record<string, unknown>) => container.updateAvailable,
         ).length;
       });
-    } catch (e) {
-      next(() => {
-        console.log(e);
-      });
+    } catch {
+      next();
     }
   },
 });

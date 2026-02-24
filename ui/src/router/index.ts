@@ -1,6 +1,18 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type Router } from "vue-router";
 import { getUser } from "@/services/auth";
 import { nextTick } from "vue";
+
+interface RouterWithApp extends Router {
+  app?: {
+    config?: {
+      globalProperties?: {
+        $eventBus?: {
+          emit: (event: string, ...args: unknown[]) => void;
+        };
+      };
+    };
+  };
+}
 
 const routes = [
   {
@@ -67,8 +79,8 @@ async function applyAuthNavigationGuard(to) {
     if (user !== undefined) {
       // Emit authenticated event after navigation
       nextTick(() => {
-        if ((router as any).app?.config?.globalProperties?.$eventBus) {
-          (router as any).app.config.globalProperties.$eventBus.emit("authenticated", user);
+        if ((router as RouterWithApp).app?.config?.globalProperties?.$eventBus) {
+          (router as RouterWithApp).app!.config!.globalProperties!.$eventBus!.emit("authenticated", user);
         }
       });
       
