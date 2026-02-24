@@ -323,9 +323,7 @@ describe('Docker Watcher', () => {
             expect(docker.onDockerEvent).toHaveBeenCalledTimes(1);
 
             const calledWith = docker.onDockerEvent.mock.calls[0][0].toString();
-            expect(calledWith).toBe(
-                '{"Action":"create","id":"container123"}',
-            );
+            expect(calledWith).toBe('{"Action":"create","id":"container123"}');
         });
 
         test('should update container status on other events', async () => {
@@ -354,7 +352,10 @@ describe('Docker Watcher', () => {
         test('should handle container not found during event processing', async () => {
             const mockLog = { debug: jest.fn() };
             docker.log = mockLog;
-            storeContainer.getContainer.mockReturnValue({ id: 'nonexistent', status: 'running' });
+            storeContainer.getContainer.mockReturnValue({
+                id: 'nonexistent',
+                status: 'running',
+            });
             mockDockerApi.getContainer.mockImplementation(() => {
                 throw new Error('No such container');
             });
