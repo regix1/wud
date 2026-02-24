@@ -45,6 +45,10 @@ export default defineComponent({
     collapse() {
       this.showDetail = !this.showDetail;
     },
+    looksLikeCode(value: unknown): boolean {
+      if (typeof value !== 'string') return false;
+      return value.startsWith('/') || value.startsWith('./') || value.includes('${') || value.startsWith('bash ') || value.includes('.sh');
+    },
     formatValue(value: unknown) {
       if (value === undefined || value === null || value === "") {
         return "<empty>";

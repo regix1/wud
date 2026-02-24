@@ -96,8 +96,7 @@
           }}</v-icon>
         </div>
       </v-card-title>
-      <transition name="expand-transition">
-        <div v-show="showDetail">
+        <div v-if="showDetail">
           <v-tabs
             :stacked="smAndUp"
             fixed-tabs
@@ -218,7 +217,6 @@
             </v-row>
           </v-card-actions>
         </div>
-      </transition>
     </v-card>
   </div>
 </template>
@@ -240,11 +238,13 @@
 }
 
 .v-card {
-  transition: box-shadow 0.2s ease;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .v-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 .update-available {

@@ -45,14 +45,19 @@ export default defineComponent({
       },
     ];
 
+    const applyTheme = (isDark: boolean) => {
+      theme.global.name.value = isDark ? "dark" : "light";
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    };
+
     const toggleDarkMode = (value: boolean) => {
       darkMode.value = value;
       localStorage.darkMode = String(darkMode.value);
-      theme.global.name.value = darkMode.value ? "dark" : "light";
+      applyTheme(darkMode.value);
     };
 
     onMounted(() => {
-      theme.global.name.value = darkMode.value ? "dark" : "light";
+      applyTheme(darkMode.value);
     });
 
     return {

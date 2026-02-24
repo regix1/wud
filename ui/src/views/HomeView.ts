@@ -39,10 +39,12 @@ export default defineComponent({
 
   async beforeRouteEnter(to, from, next) {
     try {
-      const containers = await getAllContainers();
-      const watchers = await getAllWatchers();
-      const registries = await getAllRegistries();
-      const triggers = await getAllTriggers();
+      const [containers, watchers, registries, triggers] = await Promise.all([
+        getAllContainers(),
+        getAllWatchers(),
+        getAllRegistries(),
+        getAllTriggers(),
+      ]);
       next((vm: ComponentPublicInstance) => {
         const instance = vm as unknown as HomeViewInstance;
         instance.containersCount = containers.length;

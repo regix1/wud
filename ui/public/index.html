@@ -4,15 +4,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="theme-color" content="#1E1E1E">
+    <meta name="theme-color" content="#1E1E1E" id="meta-theme-color">
     <title>WUD</title>
+    <script>
+      // Apply correct theme before first paint to prevent flash
+      (function() {
+        var isDark = localStorage.darkMode !== undefined
+          ? localStorage.darkMode === 'true'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (!isDark) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.querySelector('#meta-theme-color').setAttribute('content', '#F8F9FA');
+        }
+      })();
+    </script>
     <style>
       /* Dark mode foundation - prevents white flash on load */
       html, body {
         background-color: #1E1E1E;
       }
+      html[data-theme="light"], html[data-theme="light"] body {
+        background-color: #F8F9FA;
+      }
 
-      /* Custom scrollbar styling */
+      /* Custom scrollbar styling - dark */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -28,10 +43,24 @@
         background: #5A5A5A;
       }
 
+      /* Light theme scrollbar */
+      html[data-theme="light"] ::-webkit-scrollbar-track {
+        background: #F8F9FA;
+      }
+      html[data-theme="light"] ::-webkit-scrollbar-thumb {
+        background: #C0C0C0;
+      }
+      html[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+        background: #A0A0A0;
+      }
+
       /* Firefox scrollbar */
       * {
         scrollbar-width: thin;
         scrollbar-color: #4A4A4A #1E1E1E;
+      }
+      html[data-theme="light"] * {
+        scrollbar-color: #C0C0C0 #F8F9FA;
       }
 
       /* Subtle dot pattern background + prevent horizontal scroll */
@@ -39,6 +68,9 @@
         background-image: radial-gradient(circle, rgba(0, 120, 212, 0.03) 1px, transparent 1px);
         background-size: 32px 32px;
         overflow-x: hidden;
+      }
+      html[data-theme="light"] body {
+        background-image: radial-gradient(circle, rgba(0, 53, 94, 0.04) 1px, transparent 1px);
       }
 
       /* Respect reduced motion preference */

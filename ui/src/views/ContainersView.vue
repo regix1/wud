@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-4">
+  <v-container class="pa-4" style="max-width: 1400px;">
     <v-row dense>
       <v-col>
         <container-filter
@@ -27,7 +27,7 @@
       v-for="(container, index) in containersFiltered"
       :key="container.id"
     >
-      <v-col class="pt-2 pb-2">
+      <v-col class="container-item-col">
         <container-item
           :groupingLabel="groupByLabel"
           :previousContainer="containersFiltered[index - 1]"
@@ -51,3 +51,10 @@
 </template>
 
 <script lang="ts" src="./ContainersView.ts"></script>
+
+<style scoped>
+.container-item-col {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+</style>

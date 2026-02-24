@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <v-row class="d-flex pa-md-8 ma-md-4">
+    <v-row class="d-flex pa-md-8 ma-md-4 align-stretch">
       <v-col cols="12" sm="12" md="6" lg="3" xl="3" style="animation-delay: 0.05s">
         <v-card
           class="home-card text-center"
           variant="flat"
-          style="border-top: 3px solid #0078D4"
+          style="border-top: 3px solid rgb(var(--v-theme-primary))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{
@@ -31,7 +31,7 @@
         <v-card
           class="home-card text-center"
           variant="flat"
-          style="border-top: 3px solid #06D6A0"
+          style="border-top: 3px solid rgb(var(--v-theme-accent))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{ triggerIcon }}</v-icon>
@@ -45,7 +45,7 @@
         <v-card
           class="home-card text-center"
           variant="flat"
-          style="border-top: 3px solid #0096C7"
+          style="border-top: 3px solid rgb(var(--v-theme-secondary))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{ watcherIcon }}</v-icon>
@@ -59,7 +59,7 @@
         <v-card
           class="home-card text-center"
           variant="flat"
-          style="border-top: 3px solid #3794FF"
+          style="border-top: 3px solid rgb(var(--v-theme-info))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{
@@ -89,17 +89,21 @@
 }
 
 .home-card {
+  height: 100%;
   min-height: 160px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
   animation: card-enter 0.4s ease-out backwards;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .home-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
 
 .home-icon {
   font-size: 80px;
+  width: 80px;
+  height: 80px;
 }
 </style>

@@ -51,10 +51,11 @@ export default defineComponent({
 
   async beforeRouteEnter(to, from, next) {
     try {
-      const server = await getServer();
-      const store = await getStore();
-      const log = await getLog();
-
+      const [server, store, log] = await Promise.all([
+        getServer(),
+        getStore(),
+        getLog(),
+      ]);
       next((vm: ComponentPublicInstance) => {
         const instance = vm as unknown as ServerViewInstance;
         instance.server = server;

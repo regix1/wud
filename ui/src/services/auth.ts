@@ -5,6 +5,10 @@
 // Current logged user
 let user = undefined;
 
+// Cache timestamp for user auth check
+let userFetchedAt = 0;
+const USER_CACHE_TTL = 30000; // 30 seconds
+
 /**
  * Get auth strategies.
  * @returns {Promise<any>}
@@ -15,10 +19,15 @@ async function getStrategies() {
 }
 
 /**
- * Get current user.
+ * Get current user (cached for 30s to avoid blocking every navigation).
+ * @param forceRefresh - bypass the cache
  * @returns {Promise<*>}
  */
-async function getUser() {
+async function getUser(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && user !== undefined && now - userFetchedAt < USER_CACHE_TTL) {
+    return user;
+  }
   try {
     const response = await fetch("/auth/user", {
       redirect: "manual",
@@ -26,15 +35,26 @@ async function getUser() {
     });
     if (response.ok) {
       user = await response.json();
+      userFetchedAt = now;
       return user;
     } else {
       user = undefined;
+      userFetchedAt = now;
       return undefined;
     }
   } catch (e) {
     user = undefined;
+    userFetchedAt = now;
     return undefined;
   }
+}
+
+/**
+ * Clear the cached user (call on logout).
+ */
+function clearUserCache() {
+  user = undefined;
+  userFetchedAt = 0;
 }
 
 /**
@@ -81,8 +101,8 @@ async function logout() {
     credentials: "include",
     redirect: "manual",
   });
-  user = undefined;
+  clearUserCache();
   return response.json();
 }
 
-export { getStrategies, getUser, loginBasic, getOidcRedirection, logout };
+export { getStrategies, getUser, loginBasic, getOidcRedirection, logout, clearUserCache };

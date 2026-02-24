@@ -1,5 +1,5 @@
 <template>
-  <v-form @keyup.enter="login">
+  <v-form validate-on="blur" @keyup.enter="login">
     <v-card-text>
       <v-text-field
         label="Username"
@@ -19,7 +19,15 @@
         autocomplete="current-password"
         variant="outlined"
       />
-      <v-btn block color="primary" :disabled="!valid" @click="login">
+      <v-btn
+        block
+        color="primary"
+        variant="flat"
+        size="large"
+        class="mt-2"
+        :disabled="!valid"
+        @click="login"
+      >
         Login
       </v-btn>
     </v-card-text>
