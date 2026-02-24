@@ -9,7 +9,10 @@
         />
       </v-col>
     </v-row>
-    <v-card-text v-else> No triggers associated to the container </v-card-text>
+    <v-card-text v-else class="text-center pa-8">
+      <v-icon size="48" color="secondary" class="mb-2">mdi-bell-off-outline</v-icon>
+      <div class="text-body-2 text-medium-emphasis">No triggers associated to this container</div>
+    </v-card-text>
   </v-container>
 </template>
 
