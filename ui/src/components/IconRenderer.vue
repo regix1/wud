@@ -1,6 +1,21 @@
 <template>
+  <svg
+    v-if="inlineSvg"
+    :viewBox="inlineSvg.viewBox"
+    :width="size"
+    :height="size"
+    :style="iconStyle"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      v-for="(d, i) in inlineSvg.paths"
+      :key="i"
+      :d="d"
+    />
+  </svg>
   <img
-    v-if="isHomarrIcon"
+    v-else-if="isHomarrIcon"
     :src="homarrIconUrl"
     :style="iconStyle"
     :alt="icon"

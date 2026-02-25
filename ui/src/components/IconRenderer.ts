@@ -1,4 +1,5 @@
 import { defineComponent } from "vue";
+import { getInlineSvgIcon } from "@/components/svg-icon-paths";
 
 export default defineComponent({
   props: {
@@ -26,6 +27,11 @@ export default defineComponent({
         .replace("far:", "far-")
         .replace("fas:", "fas-")
         .replace("si:", "si-");
+    },
+
+    inlineSvg() {
+      if (!this.icon) return undefined;
+      return getInlineSvgIcon(this.normalizedIcon);
     },
 
     isHomarrIcon() {
@@ -64,5 +70,4 @@ export default defineComponent({
       };
     },
   },
-
 });
