@@ -23,7 +23,7 @@
         >
           <span v-if="smAndUp">
             <v-chip label color="info" variant="tonal">
-              <v-icon start>mdi-update</v-icon>
+              <v-icon start size="18">mdi-update</v-icon>
               {{ container.watcher }}
             </v-chip>
             /
@@ -33,8 +33,8 @@
               <IconRenderer
                 v-if="smAndUp"
                 :icon="registryIcon"
-                :size="24"
-                :margin-right="8"
+                :size="18"
+                :margin-right="6"
               />
               {{ container.image.registry.name }}
             </v-chip>
@@ -44,8 +44,8 @@
             <IconRenderer
               v-if="smAndUp"
               :icon="container.displayIcon"
-              :size="24"
-              :margin-right="8"
+              :size="18"
+              :margin-right="6"
             />
             <span class="text-truncate-custom">
               {{ container.displayName }}
