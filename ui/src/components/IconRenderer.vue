@@ -1,7 +1,7 @@
 <template>
   <svg
     v-if="inlineSvg"
-    :viewBox="inlineSvg.viewBox"
+    :viewBox="inlineSvgViewBox"
     :width="size"
     :height="size"
     :style="iconStyle"

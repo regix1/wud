@@ -34,6 +34,13 @@ export default defineComponent({
       return getInlineSvgIcon(this.normalizedIcon);
     },
 
+    inlineSvgViewBox() {
+      if (!this.inlineSvg) return '';
+      const parts = this.inlineSvg.viewBox.split(' ').map(Number);
+      const pad = parts[2] * 0.12;
+      return `${parts[0] - pad} ${parts[1] - pad} ${parts[2] + pad * 2} ${parts[3] + pad * 2}`;
+    },
+
     isHomarrIcon() {
       return this.icon && (this.icon.startsWith("hl-") || this.icon.startsWith("hl:"));
     },
