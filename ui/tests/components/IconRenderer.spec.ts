@@ -55,14 +55,24 @@ describe('IconRenderer', () => {
     expect(wrapper.vm.selfhstIconUrl).toContain('docker.png');
   });
 
-  it('renders img for Simple icons', () => {
+  it('renders inline svg for Simple icons with known paths', () => {
     const wrapper = mount(IconRenderer, {
       props: { icon: 'si-docker' }
     });
 
+    expect(wrapper.find('svg').exists()).toBe(true);
+    expect(wrapper.vm.inlineSvg).toBeTruthy();
+  });
+
+  it('renders img for Simple icons without inline paths', () => {
+    const wrapper = mount(IconRenderer, {
+      props: { icon: 'si-unknownicon' }
+    });
+
     expect(wrapper.find('img.simple-icon').exists()).toBe(true);
+    expect(wrapper.vm.inlineSvg).toBeUndefined();
     expect(wrapper.vm.isSimpleIcon).toBe(true);
-    expect(wrapper.vm.simpleIconUrl).toContain('docker.svg');
+    expect(wrapper.vm.simpleIconUrl).toContain('unknownicon.svg');
   });
 
   it('normalizes icon prefixes correctly', () => {
