@@ -94,30 +94,29 @@ describe('HomeView', () => {
   });
 });
 
-// Separate test block for the route hook logic if needed
-describe('HomeView Route Hook', () => {
-    it('fetches data on beforeRouteEnter', async () => {
-        const next = jest.fn();
-        const from = {};
-        const to = {};
-        
-        await HomeView.beforeRouteEnter.call(HomeView, to, from, next);
-        
-        // Check if next was called with a callback
-        expect(next).toHaveBeenCalledWith(expect.any(Function));
-        
-        // Simulate the callback execution
-        const vm = {
-            containersCount: 0,
-            triggersCount: 0,
-            watchersCount: 0,
-            registriesCount: 0,
-            containersToUpdateCount: 0
-        };
-        const callback = next.mock.calls[0][0];
-        callback(vm);
-        
-        expect(vm.containersCount).toBe(2);
-        expect(vm.registriesCount).toBe(3);
+describe('HomeView Data Fetching', () => {
+    it('fetches data on mount', async () => {
+        const wrapper = mount(HomeView, {
+          global: {
+            stubs: {
+              'v-btn': {
+                template: '<button class="v-btn-stub"><slot /></button>',
+              }
+            }
+          }
+        });
+
+        // Wait for mounted async to resolve
+        await wrapper.vm.$nextTick();
+        await new Promise((r) => setTimeout(r, 0));
+
+        expect(wrapper.vm.$data.containersCount).toBe(2);
+        expect(wrapper.vm.$data.registriesCount).toBe(3);
+        expect(wrapper.vm.$data.triggersCount).toBe(1);
+        expect(wrapper.vm.$data.watchersCount).toBe(2);
+        expect(wrapper.vm.$data.containersToUpdateCount).toBe(1);
+        expect(wrapper.vm.$data.loading).toBe(false);
+
+        wrapper.unmount();
     });
 });
