@@ -2,7 +2,6 @@ import ContainerItem from "@/components/ContainerItem.vue";
 import ContainerFilter from "@/components/ContainerFilter.vue";
 import { deleteContainer, getAllContainers } from "@/services/container";
 import { defineComponent } from "vue";
-import type { ComponentPublicInstance } from "vue";
 import type { Container } from "@/types/container";
 
 export default defineComponent({
@@ -13,6 +12,7 @@ export default defineComponent({
 
   data() {
     return {
+      loading: true,
       containers: [] as Container[],
       registrySelected: "",
       watcherSelected: "",
@@ -170,53 +170,36 @@ export default defineComponent({
     },
   },
 
-  async beforeRouteEnter(to, from, next) {
-    const registrySelected = to.query["registry"];
-    const watcherSelected = to.query["watcher"];
-    const updateKindSelected = to.query["update-kind"];
-    const updateAvailable = to.query["update-available"];
-    const oldestFirst = to.query["oldest-first"];
-    const groupByLabel = to.query["group-by-label"];
+  async mounted() {
+    const query = this.$route.query;
+    if (query["registry"]) {
+      this.registrySelected = query["registry"] as string;
+    }
+    if (query["watcher"]) {
+      this.watcherSelected = query["watcher"] as string;
+    }
+    if (query["update-kind"]) {
+      this.updateKindSelected = query["update-kind"] as string;
+    }
+    if (query["update-available"]) {
+      this.updateAvailableSelected = (query["update-available"] as string).toLowerCase() === "true";
+    }
+    if (query["oldest-first"]) {
+      this.oldestFirst = (query["oldest-first"] as string).toLowerCase() === "true";
+    }
+    if (query["group-by-label"]) {
+      this.groupByLabel = query["group-by-label"] as string;
+    }
     try {
-      const containers = await getAllContainers();
-      next((vm: ComponentPublicInstance) => {
-        const v = vm as ComponentPublicInstance & {
-          registrySelected: string;
-          watcherSelected: string;
-          updateKindSelected: string;
-          updateAvailableSelected: boolean;
-          oldestFirst: boolean;
-          groupByLabel: string;
-          containers: Container[];
-        };
-        if (registrySelected) {
-          v.registrySelected = registrySelected as string;
-        }
-        if (watcherSelected) {
-          v.watcherSelected = watcherSelected as string;
-        }
-        if (updateKindSelected) {
-          v.updateKindSelected = updateKindSelected as string;
-        }
-        if (updateAvailable) {
-          v.updateAvailableSelected = (updateAvailable as string).toLowerCase() === "true";
-        }
-        if (oldestFirst) {
-          v.oldestFirst = (oldestFirst as string).toLowerCase() === "true";
-        }
-        if (groupByLabel) {
-          v.groupByLabel = groupByLabel as string;
-        }
-        v.containers = containers;
-      });
+      this.containers = await getAllContainers();
     } catch (e: unknown) {
-      next((vm: ComponentPublicInstance) => {
-        vm.$eventBus.emit(
-          "notify",
-          `Error when trying to get the containers (${e instanceof Error ? e.message : String(e)})`,
-          "error",
-        );
-      });
+      this.$eventBus.emit(
+        "notify",
+        `Error when trying to get the containers (${e instanceof Error ? e.message : String(e)})`,
+        "error",
+      );
+    } finally {
+      this.loading = false;
     }
   },
 });

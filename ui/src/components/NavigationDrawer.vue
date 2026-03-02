@@ -4,7 +4,7 @@
     :permanent="!isMobile"
     :temporary="isMobile"
     v-model="drawerOpen"
-    :disable-route-watcher="true"
+    :disable-route-watcher="!isMobile"
     class="nav-drawer"
   >
     <div class="nav-header d-flex align-center" :class="mini ? 'justify-center' : ''">

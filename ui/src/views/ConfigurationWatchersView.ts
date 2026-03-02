@@ -1,11 +1,11 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
 import { getAllWatchers } from "@/services/watcher";
 import { defineComponent } from "vue";
-import type { ComponentPublicInstance } from "vue";
 
 export default defineComponent({
   data() {
     return {
+      loading: true,
       watchers: [] as Record<string, unknown>[],
     };
   },
@@ -13,18 +13,17 @@ export default defineComponent({
     ConfigurationItem,
   },
 
-  async beforeRouteEnter(to, from, next) {
+  async mounted() {
     try {
-      const watchers = await getAllWatchers();
-      next((vm: ComponentPublicInstance) => ((vm as unknown as { watchers: Record<string, unknown>[] }).watchers = watchers));
+      this.watchers = await getAllWatchers();
     } catch (e: unknown) {
-      next((vm: ComponentPublicInstance) => {
-        vm.$eventBus.emit(
-          "notify",
-          `Error when trying to load the watchers (${(e as Error).message})`,
-          "error",
-        );
-      });
+      this.$eventBus.emit(
+        "notify",
+        `Error when trying to load the watchers (${(e as Error).message})`,
+        "error",
+      );
+    } finally {
+      this.loading = false;
     }
   },
 });

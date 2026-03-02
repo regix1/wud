@@ -74,17 +74,10 @@ export default defineComponent({
       eventBus.on("notify:close", notifyClose);
     });
 
-    // Watch route changes to sync auth state
-    watch(route, async (newRoute) => {
+    // Watch route changes to clear auth state on login
+    watch(route, (newRoute) => {
       if (newRoute.name === 'login') {
         user.value = undefined;
-      } else if (!user.value) {
-        // Use cached getUser (no extra network call if router guard already fetched)
-        const { getUser } = await import("@/services/auth");
-        const currentUser = await getUser();
-        if (currentUser) {
-          onAuthenticated(currentUser);
-        }
       }
     });
 

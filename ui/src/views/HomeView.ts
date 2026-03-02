@@ -3,19 +3,11 @@ import { getRegistryIcon, getAllRegistries } from "@/services/registry";
 import { getTriggerIcon, getAllTriggers } from "@/services/trigger";
 import { getWatcherIcon, getAllWatchers } from "@/services/watcher";
 import { defineComponent } from "vue";
-import type { ComponentPublicInstance } from "vue";
-
-interface HomeViewInstance {
-  containersCount: number;
-  containersToUpdateCount: number;
-  triggersCount: number;
-  watchersCount: number;
-  registriesCount: number;
-}
 
 export default defineComponent({
   data() {
     return {
+      loading: true,
       containersCount: 0,
       containersToUpdateCount: 0,
       triggersCount: 0,
@@ -37,7 +29,7 @@ export default defineComponent({
     },
   },
 
-  async beforeRouteEnter(to, from, next) {
+  async mounted() {
     try {
       const [containers, watchers, registries, triggers] = await Promise.all([
         getAllContainers(),
@@ -45,18 +37,15 @@ export default defineComponent({
         getAllRegistries(),
         getAllTriggers(),
       ]);
-      next((vm: ComponentPublicInstance) => {
-        const instance = vm as unknown as HomeViewInstance;
-        instance.containersCount = containers.length;
-        instance.triggersCount = triggers.length;
-        instance.watchersCount = watchers.length;
-        instance.registriesCount = registries.length;
-        instance.containersToUpdateCount = containers.filter(
-          (container: Record<string, unknown>) => container.updateAvailable,
-        ).length;
-      });
-    } catch {
-      next();
+      this.containersCount = containers.length;
+      this.triggersCount = triggers.length;
+      this.watchersCount = watchers.length;
+      this.registriesCount = registries.length;
+      this.containersToUpdateCount = containers.filter(
+        (container: Record<string, unknown>) => container.updateAvailable,
+      ).length;
+    } finally {
+      this.loading = false;
     }
   },
 });
