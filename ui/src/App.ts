@@ -13,6 +13,7 @@ import AppBar from "@/components/AppBar.vue";
 import SnackBar from "@/components/SnackBar.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import { getServer } from "@/services/server";
+import { getUser } from "@/services/auth";
 import { useRoute } from "vue-router";
 import { useEventBus } from "@/composables/useEventBus";
 
@@ -74,10 +75,15 @@ export default defineComponent({
       eventBus.on("notify:close", notifyClose);
     });
 
-    // Watch route changes to clear auth state on login
-    watch(route, (newRoute) => {
+    // Watch route changes to sync auth state
+    watch(route, async (newRoute) => {
       if (newRoute.name === 'login') {
         user.value = undefined;
+      } else if (!user.value) {
+        const currentUser = await getUser();
+        if (currentUser) {
+          onAuthenticated(currentUser);
+        }
       }
     });
 
