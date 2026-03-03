@@ -72,6 +72,20 @@ const svgIconPaths: Record<string, SvgIconData> = {
   },
 };
 
+export const svgBrandColors: Record<string, { light: string; dark: string }> = {
+  github: { light: '#181717', dark: '#e6edf3' },
+  docker: { light: '#2496ED', dark: '#2496ED' },
+  microsoftazure: { light: '#0078D4', dark: '#0078D4' },
+  amazonaws: { light: '#FF9900', dark: '#FF9900' },
+  forgejo: { light: '#FB923C', dark: '#FB923C' },
+  googlecloud: { light: '#4285F4', dark: '#4285F4' },
+  gitea: { light: '#609926', dark: '#7CB342' },
+  gitlab: { light: '#FC6D26', dark: '#FC6D26' },
+  redhat: { light: '#EE0000', dark: '#EE0000' },
+  linuxcontainers: { light: '#333333', dark: '#B0BEC5' },
+  opencontainersinitiative: { light: '#262261', dark: '#7C77B9' },
+};
+
 export function getInlineSvgIcon(iconName: string): SvgIconData | undefined {
   const normalized = iconName
     .replace("si-", "")

@@ -16,7 +16,7 @@
     <v-card :class="{ 'update-available': container.updateAvailable }">
       <v-card-title
         @click="collapseDetail()"
-        class="clickable-header pa-3 d-flex align-center"
+        class="clickable-header pa-4 d-flex align-center"
       >
         <div
           class="text-body-2 d-flex align-center gap-sm"
@@ -120,11 +120,7 @@
               <span v-if="smAndUp">Image</span>
             </v-tab>
             <v-tab>
-              <IconRenderer
-                :icon="container.displayIcon"
-                :size="18"
-                :margin-right="smAndUp ? 6 : 0"
-              />
+              <v-icon start size="small">mdi-docker</v-icon>
               <span v-if="smAndUp">Container</span>
             </v-tab>
             <v-tab v-if="container.error">
@@ -234,7 +230,7 @@
 }
 
 .gap-sm {
-  gap: 8px;
+  gap: 10px;
 }
 
 .text-truncate-custom {

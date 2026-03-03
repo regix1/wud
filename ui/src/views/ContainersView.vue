@@ -54,7 +54,7 @@
 
 <style scoped>
 .container-item-col {
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 </style>

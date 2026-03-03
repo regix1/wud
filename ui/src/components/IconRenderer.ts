@@ -41,6 +41,11 @@ export default defineComponent({
       return `${parts[0] - pad} ${parts[1] - pad} ${parts[2] + pad * 2} ${parts[3] + pad * 2}`;
     },
 
+    iconKey() {
+      if (!this.inlineSvg) return '';
+      return this.normalizedIcon.replace('si-', '').replace('si:', '');
+    },
+
     isHomarrIcon() {
       return this.icon && (this.icon.startsWith("hl-") || this.icon.startsWith("hl:"));
     },
@@ -77,4 +82,4 @@ export default defineComponent({
       };
     },
   },
-});
+})
