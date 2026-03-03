@@ -14,6 +14,7 @@ export default defineComponent({
     return {
       loading: true,
       containers: [] as Container[],
+      eventSource: null as EventSource | null,
       registrySelected: "",
       watcherSelected: "",
       updateKindSelected: "",
@@ -200,6 +201,36 @@ export default defineComponent({
       );
     } finally {
       this.loading = false;
+    }
+
+    // Subscribe to real-time container updates via SSE
+    this.eventSource = new EventSource('/api/sse');
+
+    this.eventSource.addEventListener('container-added', (event: MessageEvent) => {
+      const container: Container = JSON.parse(event.data);
+      if (!this.containers.some((c) => c.id === container.id)) {
+        this.containers.push(container);
+      }
+    });
+
+    this.eventSource.addEventListener('container-updated', (event: MessageEvent) => {
+      const container: Container = JSON.parse(event.data);
+      const index = this.containers.findIndex((c) => c.id === container.id);
+      if (index !== -1) {
+        this.containers.splice(index, 1, container);
+      }
+    });
+
+    this.eventSource.addEventListener('container-removed', (event: MessageEvent) => {
+      const container: Container = JSON.parse(event.data);
+      this.containers = this.containers.filter((c) => c.id !== container.id);
+    });
+  },
+
+  beforeUnmount() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
     }
   },
 });

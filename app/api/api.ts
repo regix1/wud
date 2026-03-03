@@ -11,6 +11,7 @@ import * as logRouter from './log';
 import * as storeRouter from './store';
 import * as serverRouter from './server';
 import * as auth from './auth';
+import * as sseRouter from './sse';
 
 /**
  * Init the API router.
@@ -24,6 +25,9 @@ export function init() {
 
     // Routes to protect after this line
     router.use(passport.authenticate(auth.getAllIds()));
+
+    // Mount SSE router
+    router.use('/sse', sseRouter.init());
 
     // Mount log router
     router.use('/log', logRouter.init());

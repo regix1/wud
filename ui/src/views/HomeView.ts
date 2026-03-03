@@ -17,6 +17,8 @@ export default defineComponent({
       registryIcon: getRegistryIcon(),
       triggerIcon: getTriggerIcon(),
       watcherIcon: getWatcherIcon(),
+      eventSource: null as EventSource | null,
+      containers: [] as Record<string, unknown>[],
     };
   },
 
@@ -37,6 +39,7 @@ export default defineComponent({
         getAllRegistries(),
         getAllTriggers(),
       ]);
+      this.containers = containers;
       this.containersCount = containers.length;
       this.triggersCount = triggers.length;
       this.watchersCount = watchers.length;
@@ -47,5 +50,49 @@ export default defineComponent({
     } finally {
       this.loading = false;
     }
+
+    // Subscribe to real-time container updates via SSE
+    this.eventSource = new EventSource('/api/sse');
+
+    this.eventSource.addEventListener('container-added', (event: MessageEvent) => {
+      const container = JSON.parse(event.data);
+      if (!this.containers.some((c: Record<string, unknown>) => c.id === container.id)) {
+        this.containers.push(container);
+        this.recalculateContainerCounts();
+      }
+    });
+
+    this.eventSource.addEventListener('container-updated', (event: MessageEvent) => {
+      const container = JSON.parse(event.data);
+      const index = this.containers.findIndex((c: Record<string, unknown>) => c.id === container.id);
+      if (index !== -1) {
+        this.containers.splice(index, 1, container);
+      } else {
+        this.containers.push(container);
+      }
+      this.recalculateContainerCounts();
+    });
+
+    this.eventSource.addEventListener('container-removed', (event: MessageEvent) => {
+      const container = JSON.parse(event.data);
+      this.containers = this.containers.filter((c: Record<string, unknown>) => c.id !== container.id);
+      this.recalculateContainerCounts();
+    });
+  },
+
+  beforeUnmount() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
+  },
+
+  methods: {
+    recalculateContainerCounts() {
+      this.containersCount = this.containers.length;
+      this.containersToUpdateCount = this.containers.filter(
+        (container: Record<string, unknown>) => container.updateAvailable,
+      ).length;
+    },
   },
 });

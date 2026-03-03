@@ -71,6 +71,18 @@ config.global.mocks = {
   }
 };
 
+// Mock EventSource globally (browser API not available in jsdom)
+const mockEventSource = {
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  close: jest.fn(),
+  readyState: 0,
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSED: 2,
+};
+(global as any).EventSource = jest.fn(() => mockEventSource);
+
 // Mock fetch globally
 global.fetch = jest.fn();
 (global.fetch as any).mockResolvedValue = jest.fn();
