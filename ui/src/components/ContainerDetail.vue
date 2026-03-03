@@ -129,8 +129,9 @@
   padding: 6px 12px !important;
 }
 .config-key {
-  width: 120px;
+  width: 160px;
   font-weight: 500;
+  white-space: nowrap;
 }
 .config-value {
   word-break: break-word;

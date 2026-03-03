@@ -266,6 +266,7 @@
   font-size: 0.8125rem;
   opacity: 0.6;
   min-height: 42px;
+  white-space: nowrap;
 }
 
 .detail-tabs :deep(.v-tab--selected) {

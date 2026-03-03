@@ -87,7 +87,7 @@
 .table-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .config-table { width: 100%; background: transparent; border-collapse: collapse; }
 .config-table td { border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important; padding: 6px 12px !important; }
-.config-key { width: 120px; font-weight: 500; }
+.config-key { width: 160px; font-weight: 500; white-space: nowrap; }
 .config-value { word-break: break-word; }
 .config-code { background: rgba(var(--v-theme-on-surface), 0.06); padding: 2px 8px; border-radius: 4px; font-size: 0.8125rem; font-family: 'Roboto Mono', monospace; color: rgb(var(--v-theme-secondary)); }
 </style>

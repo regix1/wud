@@ -100,8 +100,9 @@
 }
 
 .config-key {
-  width: 110px;
+  width: 160px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .config-value {
