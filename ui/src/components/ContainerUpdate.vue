@@ -30,7 +30,7 @@
               Link
             </td>
             <td class="config-value">
-              <a :href="result.link" target="_blank">{{ result.link }}</a>
+              <a :href="result.link" target="_blank" class="text-primary">{{ result.link }}</a>
             </td>
           </tr>
           <!-- Row: Digest (conditional on result.digest) -->
@@ -86,8 +86,8 @@
 <style scoped>
 .table-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .config-table { width: 100%; background: transparent; border-collapse: collapse; }
-.config-table td { border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important; padding: 6px 12px !important; }
+.config-table td { border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important; padding: 6px 12px !important; }
 .config-key { width: 160px; font-weight: 500; white-space: nowrap; }
 .config-value { word-break: break-word; }
-.config-code { background: rgba(var(--v-theme-on-surface), 0.06); padding: 2px 8px; border-radius: 4px; font-size: 0.8125rem; font-family: 'Roboto Mono', monospace; color: rgb(var(--v-theme-secondary)); }
+.config-code { background: rgba(var(--v-theme-on-surface), 0.10); padding: 2px 8px; border-radius: 4px; font-size: 0.8125rem; font-family: 'Roboto Mono', monospace; color: rgb(var(--v-theme-secondary)); }
 </style>

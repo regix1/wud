@@ -1,95 +1,119 @@
-import { ref, computed, onMounted, defineComponent } from "vue";
-import { useTheme, useDisplay } from "vuetify";
-import { getContainerIcon } from "@/services/container";
-import { getRegistryIcon } from "@/services/registry";
-import { getTriggerIcon } from "@/services/trigger";
-import { getServerIcon } from "@/services/server";
-import { getWatcherIcon } from "@/services/watcher";
-import { getAuthenticationIcon } from "@/services/authentication";
+import { defineComponent, ref, computed, watch, onMounted } from 'vue';
+import { useDisplay, useTheme } from 'vuetify';
+import { getContainerIcon } from '@/services/container';
+import { getRegistryIcon } from '@/services/registry';
+import { getTriggerIcon } from '@/services/trigger';
+import { getServerIcon } from '@/services/server';
+import { getWatcherIcon } from '@/services/watcher';
+import { getAuthenticationIcon } from '@/services/authentication';
+
+interface NavItem {
+  name: string;
+  icon: string;
+  route: string;
+}
 
 export default defineComponent({
+  name: 'NavigationDrawer',
+
   props: {
     modelValue: {
       type: Boolean,
-      default: true,
+      required: true,
     },
   },
-  emits: ["update:modelValue"],
+
+  emits: ['update:modelValue'],
+
   setup(props, { emit }) {
-    const theme = useTheme();
     const { mobile } = useDisplay();
+    const theme = useTheme();
+
     const isMobile = computed(() => mobile.value);
     const mini = ref(true);
-    const darkMode = ref(
-      localStorage.darkMode !== undefined
-        ? localStorage.darkMode === "true"
-        : window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
-
-    const configurationItems = [
-      {
-        to: "/configuration/authentications",
-        name: "auth",
-        icon: getAuthenticationIcon(),
-      },
-      {
-        to: "/configuration/registries",
-        name: "registries",
-        icon: getRegistryIcon(),
-      },
-      {
-        to: "/configuration/triggers",
-        name: "triggers",
-        icon: getTriggerIcon(),
-      },
-      {
-        to: "/configuration/watchers",
-        name: "watchers",
-        icon: getWatcherIcon(),
-      },
-      {
-        to: "/configuration/server",
-        name: "server",
-        icon: getServerIcon(),
-      },
-    ];
-
-    const applyTheme = (isDark: boolean) => {
-      theme.global.name.value = isDark ? "dark" : "light";
-      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    };
-
-    const toggleDarkMode = (value: boolean) => {
-      darkMode.value = value;
-      localStorage.darkMode = String(darkMode.value);
-      applyTheme(darkMode.value);
-    };
 
     const drawerOpen = computed({
-      get: () => props.modelValue,
-      set: (value: boolean) => emit("update:modelValue", value),
+      get(): boolean {
+        return props.modelValue;
+      },
+      set(value: boolean): void {
+        emit('update:modelValue', value);
+      },
     });
+
+    watch(isMobile, (nowMobile: boolean) => {
+      if (nowMobile) {
+        mini.value = true;
+      }
+    });
+
+    const mainItems: NavItem[] = [
+      { name: 'Home', icon: 'mdi-home', route: '/' },
+      { name: 'Containers', icon: getContainerIcon(), route: '/containers' },
+    ];
+
+    const configItems: NavItem[] = [
+      { name: 'Auth', icon: getAuthenticationIcon(), route: '/configuration/authentications' },
+      { name: 'Registries', icon: getRegistryIcon(), route: '/configuration/registries' },
+      { name: 'Triggers', icon: getTriggerIcon(), route: '/configuration/triggers' },
+      { name: 'Watchers', icon: getWatcherIcon(), route: '/configuration/watchers' },
+      { name: 'Server', icon: getServerIcon(), route: '/configuration/server' },
+    ].sort((a: NavItem, b: NavItem) => a.name.localeCompare(b.name));
+
+    const isDark = ref(false);
+
+    function detectInitialTheme(): boolean {
+      const stored = localStorage.getItem('darkMode');
+      if (stored !== null) {
+        return stored === 'true';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    function applyTheme(dark: boolean): void {
+      theme.change(dark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    }
+
+    function toggleDarkMode(): void {
+      isDark.value = !isDark.value;
+      localStorage.setItem('darkMode', String(isDark.value));
+      applyTheme(isDark.value);
+    }
 
     onMounted(() => {
-      applyTheme(darkMode.value);
+      isDark.value = detectInitialTheme();
+      applyTheme(isDark.value);
     });
 
+    const darkModeLabel = computed((): string => {
+      return isDark.value ? 'Dark Mode' : 'Light Mode';
+    });
+
+    const darkModeIcon = computed((): string => {
+      return isDark.value ? 'mdi-weather-night' : 'mdi-white-balance-sunny';
+    });
+
+    function toggleMini(): void {
+      mini.value = !mini.value;
+    }
+
+    function closeMobileDrawer(): void {
+      drawerOpen.value = false;
+    }
+
     return {
-      mini,
-      darkMode,
       isMobile,
+      mini,
       drawerOpen,
-      containerIcon: getContainerIcon(),
-      configurationItems,
+      mainItems,
+      configItems,
+      isDark,
+      darkModeLabel,
+      darkModeIcon,
+      toggleMini,
+      closeMobileDrawer,
       toggleDarkMode,
     };
-  },
-
-  computed: {
-    configurationItemsSorted() {
-      return [...this.configurationItems].sort((item1, item2) =>
-        item1.name.localeCompare(item2.name),
-      );
-    },
   },
 });

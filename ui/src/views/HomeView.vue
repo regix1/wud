@@ -91,13 +91,13 @@
 .home-card {
   height: 100%;
   min-height: 160px;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   animation: card-enter 0.4s ease-out backwards;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .home-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
 }
 

@@ -4,8 +4,8 @@ import { useDisplay } from "vuetify";
 
 export default defineComponent({
   setup() {
-    const { smAndUp } = useDisplay();
-    return { smAndUp };
+    const { smAndUp, width } = useDisplay();
+    return { smAndUp, width };
   },
   components: {},
   props: {
@@ -48,6 +48,7 @@ export default defineComponent({
 
   methods: {
     collapse() {
+      if (this.showTestForm) return;
       this.showDetail = !this.showDetail;
     },
     async runTrigger() {

@@ -15,7 +15,9 @@ import AppFooter from "@/components/AppFooter.vue";
 import { getServer } from "@/services/server";
 import { getUser } from "@/services/auth";
 import { useRoute } from "vue-router";
+import { useDisplay } from "vuetify";
 import { useEventBus } from "@/composables/useEventBus";
+import { useDataCache } from "@/composables/useDataCache";
 
 export default defineComponent({
   components: {
@@ -28,12 +30,15 @@ export default defineComponent({
     const route = useRoute();
     const eventBus = inject("eventBus") as ReturnType<typeof useEventBus>;
     const instance = getCurrentInstance();
+    const { mobile } = useDisplay();
+
+    const { prefetchAll } = useDataCache();
 
     const snackbarMessage = ref("");
     const snackbarShow = ref(false);
     const snackbarLevel = ref("info");
     const user = ref(undefined);
-    const drawerOpen = ref(true);
+    const drawerOpen = ref(!mobile.value);
 
     const toggleNav = () => {
       drawerOpen.value = !drawerOpen.value;
@@ -56,6 +61,7 @@ export default defineComponent({
 
     const onAuthenticated = (userData: Record<string, unknown>) => {
       user.value = userData;
+      prefetchAll();
     };
 
     const notify = (message: string, level = "info") => {

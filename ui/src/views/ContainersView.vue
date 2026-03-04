@@ -24,18 +24,24 @@
       </v-col>
     </v-row>
     <v-row
-      v-for="(container, index) in containersFiltered"
+      v-for="container in containersFiltered"
       :key="container.id"
     >
-      <v-col class="container-item-col">
-        <container-item
-          :groupingLabel="groupByLabel"
-          :previousContainer="containersFiltered[(index as number) - 1]"
-          :container="container"
-          :oldest-first="oldestFirst"
-          @delete-container="deleteContainer(container)"
-          @container-deleted="removeContainerFromList(container)"
-        />
+      <v-col>
+        <div v-if="groupHeaderIds.has(container.id)" class="mb-2">
+          <div class="text-h6">
+            {{ groupByLabel }} = {{ container.labels?.[groupByLabel] ?? "(empty)" }}
+          </div>
+          <v-divider class="pb-3" />
+        </div>
+        <div class="container-item-col">
+          <container-item
+            :container="container"
+            :oldest-first="oldestFirst"
+            @delete-container="deleteContainer(container)"
+            @container-deleted="removeContainerFromList(container)"
+          />
+        </div>
       </v-col>
     </v-row>
     <v-row v-if="containersFiltered.length === 0">
@@ -56,5 +62,7 @@
 .container-item-col {
   padding-top: 8px;
   padding-bottom: 8px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 80px;
 }
 </style>

@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 import Trigger from '../Trigger';
+import { getExplicitProxyConfig } from '../../../proxy';
 
 /**
  * HTTP Trigger implementation
@@ -79,13 +80,7 @@ class Http extends Trigger {
                 };
             }
         }
-        if (this.configuration.proxy) {
-            const proxyUrl = new URL(this.configuration.proxy);
-            options.proxy = {
-                host: proxyUrl.hostname,
-                port: proxyUrl.port,
-            };
-        }
+        Object.assign(options, getExplicitProxyConfig(this.configuration.proxy, this.configuration.url));
         const response = await axios(options);
         return response.data;
     }

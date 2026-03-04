@@ -1,6 +1,7 @@
 // @ts-nocheck
 import axios from 'axios';
 import Trigger from '../Trigger';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Rocket Chat Trigger implementation
@@ -152,6 +153,7 @@ class Rocketchat extends Trigger {
                 'content-type': 'application/json',
                 accept: 'application/json',
             },
+            ...getProxyConfig(`${this.configuration.url}/api/v1/chat.postMessage`),
         };
     }
 }

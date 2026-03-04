@@ -47,7 +47,7 @@
 }
 
 .login-card {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-top: 2px solid rgb(var(--v-theme-primary));
 }
 

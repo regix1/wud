@@ -1,4 +1,5 @@
 <template>
+  <div>
   <v-card>
     <v-card-title
       @click="collapse()"
@@ -65,97 +66,104 @@
             <span v-else>Default configuration</span>
           </v-col>
           <v-col cols="12" sm="4" class="text-right">
-            <v-btn variant="outlined" size="small" color="accent" @click="showTestForm = true">
+            <v-btn variant="outlined" size="small" color="accent" @click.stop="showTestForm = true">
               Test
               <v-icon end>mdi-test-tube</v-icon>
             </v-btn>
-
-            <v-navigation-drawer
-              v-model="showTestForm"
-              location="right"
-              temporary
-              :width="smAndUp ? 400 : '100vw'"
-            >
-              <div class="pa-3">
-                <div class="text-subtitle-2 mb-2">
-                  <v-icon size="small">mdi-test-tube</v-icon>
-                  Test trigger
-                </div>
-                <v-text-field
-                  label="Container ID"
-                  v-model="container.id"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-text-field
-                  label="Container Name"
-                  v-model="container.name"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-text-field
-                  label="Container Watcher"
-                  v-model="container.watcher"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-select
-                  label="Update kind"
-                  v-model="container.updateKind.kind"
-                  :items="['digest', 'tag']"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-select
-                  v-if="container.updateKind.kind === 'tag'"
-                  label="Update semver diff"
-                  v-model="container.updateKind.semverDiff"
-                  :items="['major', 'minor', 'patch']"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-text-field
-                  label="Container local value"
-                  v-model="container.updateKind.localValue"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-2"
-                />
-                <v-text-field
-                  label="Container remote value"
-                  v-model="container.updateKind.remoteValue"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="mb-3"
-                />
-                <v-btn
-                  variant="outlined"
-                  size="small"
-                  color="accent"
-                  block
-                  @click="runTrigger"
-                  :loading="isTriggering"
-                  >Run trigger</v-btn
-                >
-              </div>
-            </v-navigation-drawer>
           </v-col>
         </v-row>
       </v-card-text>
       </v-expand-transition>
   </v-card>
+
+  <Teleport to="body">
+    <transition name="slide-right">
+      <div v-if="showTestForm" class="trigger-panel-overlay" @click.self="showTestForm = false">
+        <div class="trigger-panel" :style="{ width: smAndUp ? '500px' : '75vw' }">
+          <div class="d-flex align-center justify-space-between pa-3 pb-0">
+            <div class="text-subtitle-2">
+              <v-icon size="small">mdi-test-tube</v-icon>
+              Test trigger
+            </div>
+            <v-btn icon="mdi-close" variant="text" size="small" density="comfortable" @click="showTestForm = false" />
+          </div>
+          <div class="pa-3 pt-2">
+            <v-text-field
+              label="Container ID"
+              v-model="container.id"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-text-field
+              label="Container Name"
+              v-model="container.name"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-text-field
+              label="Container Watcher"
+              v-model="container.watcher"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-autocomplete
+              label="Update kind"
+              v-model="container.updateKind.kind"
+              :items="['digest', 'tag']"
+              :virtual="true"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-autocomplete
+              v-if="container.updateKind.kind === 'tag'"
+              label="Update semver diff"
+              v-model="container.updateKind.semverDiff"
+              :items="['major', 'minor', 'patch']"
+              :virtual="true"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-text-field
+              label="Container local value"
+              v-model="container.updateKind.localValue"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-text-field
+              label="Container remote value"
+              v-model="container.updateKind.remoteValue"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-3"
+            />
+            <v-btn
+              variant="outlined"
+              size="small"
+              color="accent"
+              block
+              @click="runTrigger"
+              :loading="isTriggering"
+              >Run trigger</v-btn
+            >
+          </div>
+        </div>
+      </div>
+    </transition>
+  </Teleport>
+  </div>
 </template>
 
 <script lang="ts" src="./TriggerDetail.ts"></script>
@@ -172,7 +180,7 @@
 }
 
 .config-table td {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
   padding: 6px 12px !important;
 }
 
@@ -192,11 +200,57 @@
 }
 
 .config-code {
-  background: rgba(var(--v-theme-on-surface), 0.06);
+  background: rgba(var(--v-theme-on-surface), 0.10);
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.8125rem;
   font-family: 'Roboto Mono', monospace;
   color: rgb(var(--v-theme-secondary));
+}
+</style>
+
+<style>
+.trigger-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.trigger-panel {
+  height: 100%;
+  background: rgb(var(--v-theme-surface));
+  overflow-y: auto;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-right-enter-active .trigger-panel,
+.slide-right-leave-active .trigger-panel {
+  transition: transform 0.3s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  background: rgba(0, 0, 0, 0);
+}
+
+.slide-right-enter-from .trigger-panel {
+  transform: translateX(100%);
+}
+
+.slide-right-leave-to .trigger-panel {
+  transform: translateX(100%);
+}
+
+.trigger-panel .v-field--focused .v-field__outline {
+  --v-field-border-opacity: 0.4;
+  color: rgb(var(--v-theme-secondary)) !important;
 }
 </style>

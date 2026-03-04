@@ -1,18 +1,5 @@
 <template>
   <div>
-    <div
-      v-if="
-        groupingLabel &&
-        previousContainer?.labels?.[groupingLabel] !==
-          container.labels?.[groupingLabel]
-      "
-    >
-      <div class="text-h6">
-        {{ groupingLabel }} =
-        {{ container.labels?.[groupingLabel] ?? "(empty)" }}
-      </div>
-      <v-divider class="pb-3"></v-divider>
-    </div>
     <v-card :class="{ 'update-available': container.updateAvailable }">
       <v-card-title
         @click="collapseDetail()"
@@ -241,12 +228,12 @@
 }
 
 .v-card {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .v-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
 
@@ -256,7 +243,7 @@
 
 /* Detail tabs styling */
 .detail-tabs {
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .detail-tabs :deep(.v-tab) {

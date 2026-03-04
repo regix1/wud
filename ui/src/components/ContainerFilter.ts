@@ -48,34 +48,16 @@ export default defineComponent({
   data() {
     return {
       isRefreshing: false,
-      registrySelected: "",
-      watcherSelected: "",
-      updateKindSelected: "",
+      registrySelected: this.registrySelectedInit || "",
+      watcherSelected: this.watcherSelectedInit || "",
+      updateKindSelected: this.updateKindSelectedInit || "",
       updateAvailableLocal: this.updateAvailable,
       oldestFirstLocal: this.oldestFirst,
-      groupByLabelLocal: this.groupByLabel,
+      groupByLabelLocal: this.groupByLabel || "",
     };
   },
 
   methods: {
-    emitRegistryChanged() {
-      this.$emit("registry-changed", this.registrySelected ?? "");
-    },
-    emitWatcherChanged() {
-      this.$emit("watcher-changed", this.watcherSelected ?? "");
-    },
-    emitUpdateKindChanged() {
-      this.$emit("update-kind-changed", this.updateKindSelected ?? "");
-    },
-    emitUpdateAvailableChanged() {
-      this.$emit("update-available-changed");
-    },
-    emitOldestFirstChanged() {
-      this.$emit("oldest-first-changed");
-    },
-    emitGroupByLabelChanged(newLabel: string) {
-      this.$emit("group-by-label-changed", newLabel ?? "");
-    },
     async refreshAllContainers() {
       this.isRefreshing = true;
       try {
@@ -95,12 +77,24 @@ export default defineComponent({
     },
   },
 
-  async beforeUpdate() {
-    this.registrySelected = this.registrySelectedInit;
-    this.watcherSelected = this.watcherSelectedInit;
-    this.updateKindSelected = this.updateKindSelectedInit;
-    this.updateAvailableLocal = this.updateAvailable;
-    this.oldestFirstLocal = this.oldestFirst;
-    this.groupByLabelLocal = this.groupByLabel;
+  watch: {
+    registrySelected(val: string) {
+      this.$emit("registry-changed", val ?? "");
+    },
+    watcherSelected(val: string) {
+      this.$emit("watcher-changed", val ?? "");
+    },
+    updateKindSelected(val: string) {
+      this.$emit("update-kind-changed", val ?? "");
+    },
+    updateAvailableLocal() {
+      this.$emit("update-available-changed");
+    },
+    oldestFirstLocal() {
+      this.$emit("oldest-first-changed");
+    },
+    groupByLabelLocal(val: string) {
+      this.$emit("group-by-label-changed", val ?? "");
+    },
   },
 });

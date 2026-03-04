@@ -35,11 +35,11 @@
 
 <style scoped>
 .trigger-card {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   transition: box-shadow 0.2s ease;
 }
 .trigger-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 .gap-sm {
   gap: 8px;

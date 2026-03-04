@@ -1,8 +1,9 @@
-import { getContainerIcon, getAllContainers } from "@/services/container";
-import { getRegistryIcon, getAllRegistries } from "@/services/registry";
-import { getTriggerIcon, getAllTriggers } from "@/services/trigger";
-import { getWatcherIcon, getAllWatchers } from "@/services/watcher";
+import { getContainerIcon } from "@/services/container";
+import { getRegistryIcon } from "@/services/registry";
+import { getTriggerIcon } from "@/services/trigger";
+import { getWatcherIcon } from "@/services/watcher";
 import { defineComponent } from "vue";
+import { useDataCache } from "@/composables/useDataCache";
 
 export default defineComponent({
   data() {
@@ -33,13 +34,13 @@ export default defineComponent({
 
   async mounted() {
     try {
-      const [containers, watchers, registries, triggers] = await Promise.all([
-        getAllContainers(),
-        getAllWatchers(),
-        getAllRegistries(),
-        getAllTriggers(),
-      ]);
-      this.containers = containers;
+      const cache = useDataCache();
+      await cache.prefetchAll();
+      const containers = cache.containers.value;
+      const watchers = cache.watchers.value;
+      const registries = cache.registries.value;
+      const triggers = cache.triggers.value;
+      this.containers = containers as Record<string, unknown>[];
       this.containersCount = containers.length;
       this.triggersCount = triggers.length;
       this.watchersCount = watchers.length;

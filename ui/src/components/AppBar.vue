@@ -2,15 +2,14 @@
   <v-app-bar flat rounded="0" border="b thin" density="compact">
     <v-app-bar-nav-icon v-if="isMobile" @click="$emit('toggle-nav')" />
     <v-toolbar-title
-      v-if="viewName && 'home'.toLowerCase() !== viewName.toLowerCase()"
+      v-if="viewName"
       class="text-h6 text-capitalize ma-0 pl-4"
-      >{{ viewName }}</v-toolbar-title
-    >
+    >{{ viewName }}</v-toolbar-title>
     <v-spacer />
-    <v-menu v-if="user && user.username !== 'anonymous'">
-      <template v-slot:activator="{ props }">
+    <v-menu v-if="showUserMenu">
+      <template v-slot:activator="{ props: menuProps }">
         <v-btn
-          v-bind="props"
+          v-bind="menuProps"
           variant="text"
           size="small"
           class="text-lowercase"

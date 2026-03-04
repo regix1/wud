@@ -1,82 +1,60 @@
 <template>
   <v-navigation-drawer
+    v-model="drawerOpen"
     :rail="!isMobile && mini"
     :permanent="!isMobile"
     :temporary="isMobile"
-    v-model="drawerOpen"
     :disable-route-watcher="!isMobile"
     class="nav-drawer"
   >
-    <div class="nav-header d-flex align-center" :class="mini ? 'justify-center' : ''">
-      <v-btn
-        icon
-        variant="text"
-        size="small"
-        @click.stop="mini = !mini"
-      >
-        <v-icon>{{ mini ? 'mdi-menu' : 'mdi-close' }}</v-icon>
-      </v-btn>
-      <span v-if="!mini" class="text-body-1 font-weight-bold ml-2 brand-title">WUD</span>
-    </div>
+    <!-- Header -->
+    <template #prepend>
+      <v-list density="compact" class="nav-header-list">
+        <v-list-item prepend-icon="mdi-menu" title="WUD" density="compact" class="nav-header-item" @click="!isMobile ? toggleMini() : closeMobileDrawer()">
+          <template v-slot:append>
+            <v-icon v-if="!isMobile">{{ mini ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
+            <v-btn v-else icon="mdi-close" variant="text" size="small" density="comfortable" @click.stop="closeMobileDrawer" />
+          </template>
+        </v-list-item>
+      </v-list>
+    </template>
 
-    <v-divider class="nav-divider" />
-
-    <v-list nav class="px-2 pt-2 pb-1">
+    <!-- Main nav items -->
+    <v-list density="compact" nav class="nav-list">
       <v-list-item
-        to="/"
-        key="home"
-        class="nav-item mb-1"
-        prepend-icon="mdi-home"
+        v-for="item in mainItems"
+        :key="item.route"
+        :to="item.route"
+        :prepend-icon="item.icon"
+        :title="item.name"
+        active-class="nav-item--active"
         rounded="lg"
-      >
-        <v-list-item-title>Home</v-list-item-title>
-      </v-list-item>
-      <v-list-item
-        to="/containers"
-        key="containers"
-        class="nav-item mb-1"
-        :prepend-icon="containerIcon"
-        rounded="lg"
-      >
-        <v-list-item-title>Containers</v-list-item-title>
-      </v-list-item>
+        class="nav-item"
+      />
     </v-list>
 
-    <v-divider class="nav-divider mx-3" />
+    <v-divider class="my-1" />
 
-    <div v-if="!mini" class="section-label">Configuration</div>
-
-    <v-list nav class="px-2 pt-1 pb-0">
+    <!-- Configuration section -->
+    <v-list density="compact" nav class="nav-list">
+      <div v-if="isMobile || !mini" class="nav-section-label">Configuration</div>
       <v-list-item
-        v-for="configurationItem in configurationItemsSorted"
-        :key="configurationItem.to"
-        :to="configurationItem.to"
-        class="nav-item mb-1"
-        :class="{ 'nav-sub-item': !mini }"
-        :prepend-icon="configurationItem.icon"
+        v-for="item in configItems"
+        :key="item.route"
+        :to="item.route"
+        :prepend-icon="item.icon"
+        :title="item.name"
+        active-class="nav-item--active"
         rounded="lg"
-      >
-        <v-list-item-title class="text-capitalize">
-          {{ configurationItem.name }}
-        </v-list-item-title>
-      </v-list-item>
+        class="nav-item"
+      />
     </v-list>
 
-    <template v-slot:append>
-      <v-divider class="nav-divider" />
-      <div class="pa-3 d-flex align-center" :class="mini ? 'justify-center' : 'justify-space-between'">
-        <span v-if="!mini" class="text-caption" style="color: rgba(var(--v-theme-on-surface), 0.6);">
-          {{ darkMode ? 'Dark' : 'Light' }} Mode
-        </span>
-        <v-btn
-          icon
-          variant="text"
-          size="small"
-          @click="toggleDarkMode(!darkMode)"
-        >
-          <v-icon size="small">{{ darkMode ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}</v-icon>
-        </v-btn>
-      </div>
+    <!-- Footer: dark mode toggle -->
+    <template #append>
+      <v-list density="compact" nav class="nav-footer-list">
+        <v-list-item :prepend-icon="darkModeIcon" :title="darkModeLabel" @click="toggleDarkMode" class="nav-footer-item" />
+      </v-list>
     </template>
   </v-navigation-drawer>
 </template>
@@ -84,36 +62,41 @@
 <script lang="ts" src="./NavigationDrawer.ts"></script>
 
 <style scoped>
-.nav-drawer {
-  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.08) !important;
+.nav-header-list {
+  background-color: rgb(var(--v-theme-primary)) !important;
+  padding: 0 !important;
 }
 
-.nav-header {
-  height: 48px;
-  padding: 0 12px;
-  background-color: rgb(var(--v-theme-primary));
+.nav-header-item {
+  color: white !important;
+  min-height: 40px;
+  max-height: 40px;
+  cursor: pointer;
 }
 
-.nav-header :deep(.v-icon) {
-  color: rgba(255, 255, 255, 0.85);
+.nav-header-item :deep(.v-list-item__prepend .v-icon) {
+  color: white !important;
+  opacity: 1 !important;
 }
 
-.brand-title {
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.85);
+.nav-header-item :deep(.v-list-item__append .v-btn) {
+  color: white !important;
 }
 
-.nav-divider {
-  border-color: rgba(var(--v-theme-on-surface), 0.1) !important;
+.nav-header-item :deep(.v-list-item__append .v-icon) {
+  color: white !important;
+  opacity: 1 !important;
 }
 
-.section-label {
-  padding: 12px 20px 4px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: rgba(var(--v-theme-on-surface), 0.4);
+.nav-header-item :deep(.v-list-item-title) {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: white !important;
+}
+
+.nav-list {
+  padding: 4px 8px;
 }
 
 .nav-item {
@@ -121,39 +104,32 @@
   transition: background-color 0.15s ease;
 }
 
-.nav-item :deep(.v-list-item-title) {
-  font-size: 0.875rem;
+.nav-item--active {
+  background-color: rgba(var(--v-theme-primary), 0.12) !important;
+  color: rgb(var(--v-theme-primary)) !important;
 }
 
-.nav-sub-item {
-  padding-left: 8px !important;
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(var(--v-theme-on-surface), 0.55);
+  padding: 4px 12px 2px;
+  margin-top: 4px;
 }
 
-.nav-sub-item :deep(.v-list-item-title) {
-  font-size: 0.8125rem;
+.nav-footer-list {
+  padding: 4px 8px !important;
 }
 
-/* Override Vuetify's default active state */
-.nav-item.v-list-item--active {
-  background-color: rgba(var(--v-theme-primary), 0.15);
+.nav-footer-item {
+  border-radius: 8px;
+  min-height: 40px;
+  max-height: 40px;
 }
 
-.nav-item.v-list-item--active :deep(.v-icon) {
-  color: rgb(var(--v-theme-primary));
-}
-
-.nav-item.v-list-item--active :deep(.v-list-item-title) {
-  color: rgb(var(--v-theme-primary));
-  font-weight: 500;
-}
-
-/* Hover state */
-.nav-item:not(.v-list-item--active):hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.06);
-}
-
-/* Keep icons centred in rail (collapsed) mode */
-:deep(.v-navigation-drawer--rail) .v-list-item {
-  justify-content: center;
+.nav-drawer :deep(.v-divider) {
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity)) !important;
 }
 </style>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import axios from 'axios';
 import Registry from '../../Registry';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Quay.io Registry integration.
@@ -73,7 +74,7 @@ class Quay extends Registry {
                 },
             };
             try {
-                const response = await axios(request);
+                const response = await axios({ ...request, ...getProxyConfig(request.url) });
                 token = response.token;
             } catch (e) {
                 this.log.warn(

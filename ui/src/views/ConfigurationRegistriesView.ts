@@ -1,5 +1,6 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
-import { getAllRegistries, getRegistryProviderIcon } from "@/services/registry";
+import { getRegistryProviderIcon } from "@/services/registry";
+import { useDataCache } from "@/composables/useDataCache";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -14,9 +15,10 @@ export default defineComponent({
   },
 
   async mounted() {
+    const cache = useDataCache();
     try {
-      const registries = await getAllRegistries();
-      this.registries = registries
+      await cache.prefetchAll();
+      this.registries = cache.registries.value
         .map((registry: Record<string, unknown>) => ({
           ...registry,
           icon: getRegistryProviderIcon(registry.type as string),

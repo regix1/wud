@@ -1,6 +1,7 @@
 // @ts-nocheck
 import axios from 'axios';
 import Custom from '../custom/Custom';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Gitea Container Registry integration.
@@ -89,7 +90,7 @@ class Gitea extends Custom {
             axiosConfig.headers.Authorization = `Basic ${credentials}`;
         }
 
-        const response = await axios(axiosConfig);
+        const response = await axios({ ...axiosConfig, ...getProxyConfig(axiosConfig.url) });
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

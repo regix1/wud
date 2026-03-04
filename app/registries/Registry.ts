@@ -3,6 +3,7 @@ import log from '../log';
 import Component from '../registry/Component';
 import { getSummaryTags } from '../prometheus/registry';
 import { ContainerImage } from '../model/container';
+import { getProxyConfig } from '../proxy';
 
 export type RegistryImage = ContainerImage;
 
@@ -330,6 +331,7 @@ class Registry extends Component {
             method,
             headers,
             responseType: 'json',
+            ...getProxyConfig(url),
         };
 
         const axiosOptionsWithAuth = await this.authenticate(

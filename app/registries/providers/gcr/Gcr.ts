@@ -1,6 +1,7 @@
 // @ts-nocheck
 import axios from 'axios';
 import BaseRegistry from '../../BaseRegistry';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Google Container Registry integration.
@@ -47,7 +48,7 @@ class Gcr extends BaseRegistry {
             },
         };
 
-        const response = await axios(request);
+        const response = await axios({ ...request, ...getProxyConfig(request.url) });
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import axios from 'axios';
 import Trigger from '../Trigger';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Ntfy Trigger implementation
@@ -100,6 +101,7 @@ class Ntfy extends Trigger {
         if (this.configuration.auth && this.configuration.auth.token) {
             options.headers.Authorization = `Bearer ${this.configuration.auth.token}`;
         }
+        Object.assign(options, getProxyConfig(this.configuration.url));
         const response = await axios(options);
         return response.data;
     }

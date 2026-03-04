@@ -94,7 +94,7 @@
   border-collapse: collapse;
 }
 .config-table td {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
   padding: 6px 12px !important;
 }
 .config-key {
@@ -106,7 +106,7 @@
   word-break: break-word;
 }
 .config-code {
-  background: rgba(var(--v-theme-on-surface), 0.06);
+  background: rgba(var(--v-theme-on-surface), 0.10);
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.8125rem;

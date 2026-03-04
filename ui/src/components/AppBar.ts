@@ -5,33 +5,48 @@ import { logout } from "@/services/auth";
 import type { useEventBus } from "@/composables/useEventBus";
 
 export default defineComponent({
+  name: "AppBar",
+
   props: {
     user: {
       type: Object,
       required: true,
     },
   },
+
   emits: ["toggle-nav"],
-  setup() {
+
+  setup(props) {
     const route = useRoute();
     const router = useRouter();
-    const eventBus = inject("eventBus") as ReturnType<typeof useEventBus>;
     const { mobile } = useDisplay();
+    const eventBus = inject("eventBus") as ReturnType<typeof useEventBus>;
+
     const isMobile = computed(() => mobile.value);
 
     const viewName = computed(() => {
-      return typeof route.name === "string" ? route.name : "";
+      const name = route.name as string | undefined;
+      if (!name || name.toLowerCase() === "home") {
+        return "";
+      }
+      return name;
+    });
+
+    const showUserMenu = computed(() => {
+      return (
+        props.user &&
+        props.user.username &&
+        props.user.username !== "anonymous"
+      );
     });
 
     const performLogout = async () => {
       try {
         const logoutResult = await logout();
-        if (logoutResult.logoutUrl) {
-          window.location = logoutResult.logoutUrl;
+        if (logoutResult && logoutResult.logoutUrl) {
+          window.location.href = logoutResult.logoutUrl;
         } else {
-          await router.push({
-            name: "login",
-          });
+          await router.push({ name: "login" });
         }
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -44,9 +59,10 @@ export default defineComponent({
     };
 
     return {
-      viewName,
-      logout: performLogout,
       isMobile,
+      viewName,
+      showUserMenu,
+      logout: performLogout,
     };
   },
 });

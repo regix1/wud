@@ -40,24 +40,16 @@
 /* Vuetify menu/select/autocomplete dropdown transitions */
 .v-menu-transition-enter-active,
 .v-menu-transition-leave-active {
-  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  transform-origin: top center;
+  transition: opacity 0.15s ease !important;
 }
 
-.v-menu-transition-enter-from {
-  opacity: 0 !important;
-  transform: scaleY(0.8) translateY(-8px) !important;
-}
-
+.v-menu-transition-enter-from,
 .v-menu-transition-leave-to {
   opacity: 0 !important;
-  transform: scaleY(0.8) translateY(-8px) !important;
 }
 
 .v-menu-transition-enter-to,
 .v-menu-transition-leave-from {
   opacity: 1 !important;
-  transform: scaleY(1) translateY(0) !important;
 }
 </style>

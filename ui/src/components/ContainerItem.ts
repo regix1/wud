@@ -29,15 +29,6 @@ export default defineComponent({
       type: Object as PropType<Container>,
       required: true,
     },
-    previousContainer: {
-      type: Object as PropType<Container>,
-      required: false,
-      default: undefined,
-    },
-    groupingLabel: {
-      type: String,
-      required: true,
-    },
     oldestFirst: {
       type: Boolean,
       required: false,

@@ -1,8 +1,9 @@
 import ContainerItem from "@/components/ContainerItem.vue";
 import ContainerFilter from "@/components/ContainerFilter.vue";
-import { deleteContainer, getAllContainers } from "@/services/container";
+import { deleteContainer } from "@/services/container";
 import { defineComponent } from "vue";
 import type { Container } from "@/types/container";
+import { useDataCache } from "@/composables/useDataCache";
 
 export default defineComponent({
   components: {
@@ -21,43 +22,65 @@ export default defineComponent({
       updateAvailableSelected: false,
       groupByLabel: "",
       oldestFirst: false,
+      cachedRegistries: [] as string[],
+      cachedWatchers: [] as string[],
+      cachedUpdateKinds: [] as string[],
+      cachedLabels: [] as string[],
     };
   },
-  watch: {},
+  watch: {
+    containers: {
+      handler() {
+        const newRegistries = [...new Set(
+          this.containers.map((c: Container) => c.image.registry.name).sort(),
+        )];
+        if (JSON.stringify(newRegistries) !== JSON.stringify(this.cachedRegistries)) {
+          this.cachedRegistries = newRegistries;
+        }
+
+        const newWatchers = [...new Set(
+          this.containers.map((c: Container) => c.watcher).sort(),
+        )];
+        if (JSON.stringify(newWatchers) !== JSON.stringify(this.cachedWatchers)) {
+          this.cachedWatchers = newWatchers;
+        }
+
+        const newUpdateKinds = [...new Set(
+          this.containers
+            .filter((c: Container) => c.updateAvailable)
+            .filter((c: Container) => c.updateKind.kind === "tag")
+            .filter((c: Container) => c.updateKind.semverDiff)
+            .map((c: Container) => c.updateKind.semverDiff)
+            .sort(),
+        )];
+        if (JSON.stringify(newUpdateKinds) !== JSON.stringify(this.cachedUpdateKinds)) {
+          this.cachedUpdateKinds = newUpdateKinds;
+        }
+
+        const newLabels = [...new Set(
+          this.containers.reduce((acc: string[], c: Container) => {
+            return [...acc, ...Object.keys(c.labels ?? {})];
+          }, [] as string[]),
+        )].sort();
+        if (JSON.stringify(newLabels) !== JSON.stringify(this.cachedLabels)) {
+          this.cachedLabels = newLabels;
+        }
+      },
+      deep: false,
+    },
+  },
   computed: {
     allContainerLabels() {
-      const allLabels = this.containers.reduce((acc: string[], container) => {
-        return [...acc, ...Object.keys(container.labels ?? {})];
-      }, [] as string[]);
-      return [...new Set(allLabels)].sort();
+      return this.cachedLabels;
     },
     registries() {
-      return [
-        ...new Set(
-          this.containers
-            .map((container) => container.image.registry.name)
-            .sort(),
-        ),
-      ];
+      return this.cachedRegistries;
     },
     watchers() {
-      return [
-        ...new Set(
-          this.containers.map((container) => container.watcher).sort(),
-        ),
-      ];
+      return this.cachedWatchers;
     },
     updateKinds() {
-      return [
-        ...new Set(
-          this.containers
-            .filter((container) => container.updateAvailable)
-            .filter((container) => container.updateKind.kind === "tag")
-            .filter((container) => container.updateKind.semverDiff)
-            .map((container) => container.updateKind.semverDiff)
-            .sort(),
-        ),
-      ];
+      return this.cachedUpdateKinds;
     },
     containersFiltered() {
       const filteredContainers = this.containers
@@ -101,6 +124,18 @@ export default defineComponent({
           return a.displayName.localeCompare(b.displayName);
         });
       return filteredContainers;
+    },
+    groupHeaderIds(): Set<string> {
+      if (!this.groupByLabel) return new Set();
+      const ids = new Set<string>();
+      for (let i = 0; i < this.containersFiltered.length; i++) {
+        const cur = this.containersFiltered[i].labels?.[this.groupByLabel];
+        const prev = this.containersFiltered[i - 1]?.labels?.[this.groupByLabel];
+        if (cur !== prev) {
+          ids.add(this.containersFiltered[i].id);
+        }
+      }
+      return ids;
     },
   },
 
@@ -149,7 +184,7 @@ export default defineComponent({
       if (this.groupByLabel) {
         query["group-by-label"] = this.groupByLabel;
       }
-      this.$router.push({ query });
+      this.$router.replace({ query });
     },
     onRefreshAllContainers(containersRefreshed: Container[]) {
       this.containers = containersRefreshed;
@@ -171,7 +206,7 @@ export default defineComponent({
     },
   },
 
-  async mounted() {
+  created() {
     const query = this.$route.query;
     if (query["registry"]) {
       this.registrySelected = query["registry"] as string;
@@ -191,8 +226,13 @@ export default defineComponent({
     if (query["group-by-label"]) {
       this.groupByLabel = query["group-by-label"] as string;
     }
+  },
+
+  async mounted() {
     try {
-      this.containers = await getAllContainers();
+      const cache = useDataCache();
+      await cache.prefetchAll();
+      this.containers = cache.containers.value as unknown as Container[];
     } catch (e: unknown) {
       this.$eventBus.emit(
         "notify",

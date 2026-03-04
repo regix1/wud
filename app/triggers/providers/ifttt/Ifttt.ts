@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 import Trigger from '../Trigger';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Ifttt Trigger implementation
@@ -61,13 +62,15 @@ class Ifttt extends Trigger {
      * @returns {Promise<*>}
      */
     async sendHttpRequest(body) {
+        const iftttUrl = `https://maker.ifttt.com/trigger/${this.configuration.event}/with/key/${this.configuration.key}`;
         const options = {
             method: 'POST',
-            url: `https://maker.ifttt.com/trigger/${this.configuration.event}/with/key/${this.configuration.key}`,
+            url: iftttUrl,
             headers: {
                 'Content-Type': 'application/json',
             },
             data: body,
+            ...getProxyConfig(iftttUrl),
         };
         const response = await axios(options);
         return response.data;

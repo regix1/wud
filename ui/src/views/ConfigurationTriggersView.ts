@@ -1,5 +1,5 @@
 import TriggerDetail from "@/components/TriggerDetail.vue";
-import { getAllTriggers } from "@/services/trigger";
+import { useDataCache } from "@/composables/useDataCache";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -14,8 +14,10 @@ export default defineComponent({
   },
 
   async mounted() {
+    const cache = useDataCache();
     try {
-      this.triggers = await getAllTriggers();
+      await cache.prefetchAll();
+      this.triggers = cache.triggers.value;
     } catch (e: unknown) {
       this.$eventBus.emit(
         "notify",

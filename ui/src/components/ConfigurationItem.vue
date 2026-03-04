@@ -74,12 +74,12 @@
 }
 
 .v-card {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .v-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .config-table td {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
   padding: 6px 12px !important;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .config-code {
-  background: rgba(var(--v-theme-on-surface), 0.06);
+  background: rgba(var(--v-theme-on-surface), 0.10);
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.8125rem;

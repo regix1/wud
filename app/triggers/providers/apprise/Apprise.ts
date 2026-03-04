@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 import Trigger from '../Trigger';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Apprise Trigger implementation
@@ -66,6 +67,7 @@ class Apprise extends Trigger {
             method: 'POST',
             url: uri,
             data: body,
+            ...getProxyConfig(uri),
         };
         const response = await axios(options);
         return response.data;
@@ -77,9 +79,10 @@ class Apprise extends Trigger {
      * @returns {Promise<*>}
      */
     async triggerBatch(containers) {
+        const batchUrl = `${this.configuration.url}/notify`;
         const options = {
             method: 'POST',
-            url: `${this.configuration.url}/notify`,
+            url: batchUrl,
             data: {
                 urls: this.configuration.urls,
                 title: this.renderBatchTitle(containers),
@@ -87,6 +90,7 @@ class Apprise extends Trigger {
                 format: 'text',
                 type: 'info',
             },
+            ...getProxyConfig(batchUrl),
         };
         const response = await axios(options);
         return response.data;

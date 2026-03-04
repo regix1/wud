@@ -2,68 +2,71 @@
   <v-card variant="flat" class="filter-card pa-4">
     <v-row dense align="center">
       <v-col cols="12" sm="6" md="3">
-        <v-select
+        <v-autocomplete
           :hide-details="true"
           v-model="watcherSelected"
           :items="watchers"
-          @update:modelValue="emitWatcherChanged"
-          :clearable="true"
+          :virtual="true"
+          :clearable="watchers.length > 0"
           clear-icon="mdi-close"
           label="Watcher"
           variant="outlined"
           density="compact"
-        ></v-select>
+          color="primary"
+        ></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="6" md="3">
-        <v-select
+        <v-autocomplete
           :hide-details="true"
           v-model="registrySelected"
           :items="registries"
-          @update:modelValue="emitRegistryChanged"
-          :clearable="true"
+          :virtual="true"
+          :clearable="registries.length > 0"
           clear-icon="mdi-close"
           label="Registry"
           variant="outlined"
           density="compact"
-        ></v-select>
+          color="primary"
+        ></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="6" md="3">
-        <v-select
+        <v-autocomplete
           :hide-details="true"
           v-model="updateKindSelected"
           :items="updateKinds"
-          @update:modelValue="emitUpdateKindChanged"
-          :clearable="true"
+          :virtual="true"
+          :clearable="updateKinds.length > 0"
           clear-icon="mdi-close"
           label="Update kind"
           variant="outlined"
           density="compact"
-        ></v-select>
+          color="primary"
+        ></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="6" md="3">
         <v-autocomplete
           label="Group by label"
           :items="groupLabels"
           v-model="groupByLabelLocal"
-          @update:modelValue="emitGroupByLabelChanged"
-          clearable
+          :virtual="true"
+          :clearable="groupLabels.length > 0"
           clear-icon="mdi-close"
           variant="outlined"
           density="compact"
           :hide-details="true"
+          color="primary"
         >
         </v-autocomplete>
       </v-col>
     </v-row>
 
-    <v-divider class="my-3" style="border-color: rgba(var(--v-theme-on-surface), 0.1);" />
+    <v-divider class="my-3" style="border-color: rgba(var(--v-border-color), var(--v-border-opacity));" />
 
     <v-row dense align="center" justify="space-between">
       <v-col cols="12" sm="auto" class="d-flex align-center ga-6">
         <v-switch
           label="Update available"
           v-model="updateAvailableLocal"
-          @update:modelValue="emitUpdateAvailableChanged"
           :hide-details="true"
           density="compact"
           color="primary"
@@ -72,7 +75,6 @@
         <v-switch
           label="Oldest first"
           v-model="oldestFirstLocal"
-          @update:modelValue="emitOldestFirstChanged"
           :hide-details="true"
           density="compact"
           color="primary"
@@ -97,7 +99,7 @@
 
 <style scoped>
 .filter-card {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 :deep(.v-field__clearable) {

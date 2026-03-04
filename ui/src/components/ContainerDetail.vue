@@ -42,7 +42,7 @@
             Watcher
           </td>
           <td class="config-value">
-            <router-link to="/configuration/watchers">{{ container.watcher }}</router-link>
+            <router-link to="/configuration/watchers" class="text-primary text-decoration-none">{{ container.watcher }}</router-link>
           </td>
         </tr>
         <tr v-if="container.includeTags">
@@ -103,7 +103,7 @@
             Link
           </td>
           <td class="config-value">
-            <a :href="container.link" target="_blank">{{ container.link }}</a>
+            <a :href="container.link" target="_blank" class="text-primary">{{ container.link }}</a>
           </td>
         </tr>
         </tbody>
@@ -125,7 +125,7 @@
   border-collapse: collapse;
 }
 .config-table td {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
   padding: 6px 12px !important;
 }
 .config-key {
@@ -137,7 +137,7 @@
   word-break: break-word;
 }
 .config-code {
-  background: rgba(var(--v-theme-on-surface), 0.06);
+  background: rgba(var(--v-theme-on-surface), 0.10);
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.8125rem;

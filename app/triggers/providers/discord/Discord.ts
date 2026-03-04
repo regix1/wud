@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 import Trigger from '../Trigger';
+import { getProxyConfig } from '../../../proxy';
 
 /**
  * Discord Trigger implementation
@@ -88,6 +89,7 @@ class Discord extends Trigger {
             method: 'POST',
             url: uri,
             data: body,
+            ...getProxyConfig(uri),
         };
         const response = await axios(options);
         return response.data;

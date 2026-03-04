@@ -5,7 +5,7 @@ export default defineComponent({
   props: {
     icon: {
       type: String,
-      required: true,
+      default: '',
     },
     size: {
       type: [String, Number],

@@ -131,11 +131,17 @@ describe('HTTP Trigger', () => {
         const container = { name: 'test' };
 
         await http.trigger(container);
-        expect(axios).toHaveBeenCalledWith({
-            method: 'POST',
-            url: 'https://example.com/webhook',
-            data: container,
-            proxy: { host: 'proxy', port: '8080' },
-        });
+        expect(axios).toHaveBeenCalledWith(
+            expect.objectContaining({
+                method: 'POST',
+                url: 'https://example.com/webhook',
+                data: container,
+                proxy: false,
+            }),
+        );
+        const callArgs = axios.mock.calls[0][0];
+        expect(callArgs.httpsAgent).toBeDefined();
+        expect(String(callArgs.httpsAgent.proxy)).toBe('http://proxy:8080/');
+        expect(callArgs.httpAgent).toBeDefined();
     });
 });

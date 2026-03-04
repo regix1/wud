@@ -1,7 +1,5 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
-import { getServer } from "@/services/server";
-import { getLog } from "@/services/log";
-import { getStore } from "@/services/store";
+import { useDataCache } from "@/composables/useDataCache";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -44,15 +42,12 @@ export default defineComponent({
   },
 
   async mounted() {
+    const cache = useDataCache();
     try {
-      const [server, store, log] = await Promise.all([
-        getServer(),
-        getStore(),
-        getLog(),
-      ]);
-      this.server = server;
-      this.store = store;
-      this.log = log;
+      await cache.prefetchAll();
+      this.server = cache.serverConfig.value ?? {};
+      this.store = cache.storeData.value ?? {};
+      this.log = cache.logData.value ?? {};
     } catch (e: unknown) {
       this.$eventBus.emit(
         "notify",

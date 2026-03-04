@@ -1,5 +1,5 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
-import { getAllWatchers } from "@/services/watcher";
+import { useDataCache } from "@/composables/useDataCache";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -14,8 +14,10 @@ export default defineComponent({
   },
 
   async mounted() {
+    const cache = useDataCache();
     try {
-      this.watchers = await getAllWatchers();
+      await cache.prefetchAll();
+      this.watchers = cache.watchers.value;
     } catch (e: unknown) {
       this.$eventBus.emit(
         "notify",
