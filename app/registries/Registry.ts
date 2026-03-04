@@ -346,7 +346,6 @@ class Registry extends Component {
             this.observePrometheusSummaryTags(start);
             return resolveWithFullResponse ? response : response.data;
         } catch (error) {
-            const end = new Date().getTime();
             this.observePrometheusSummaryTags(start);
             throw error;
         }

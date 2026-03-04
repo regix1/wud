@@ -70,7 +70,10 @@ class Gitlab extends Registry {
                 Authorization: `Basic ${Gitlab.base64Encode('', this.configuration.token)}`,
             },
         };
-        const response = await axios({ ...request, ...getProxyConfig(request.url) });
+        const response = await axios({
+            ...request,
+            ...getProxyConfig(request.url),
+        });
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

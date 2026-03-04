@@ -1,5 +1,4 @@
 // @ts-nocheck
-import axios from 'axios';
 import Gitea from './Gitea';
 
 jest.mock('axios');

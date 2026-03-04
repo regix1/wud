@@ -90,7 +90,10 @@ class Gitea extends Custom {
             axiosConfig.headers.Authorization = `Basic ${credentials}`;
         }
 
-        const response = await axios({ ...axiosConfig, ...getProxyConfig(axiosConfig.url) });
+        const response = await axios({
+            ...axiosConfig,
+            ...getProxyConfig(axiosConfig.url),
+        });
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

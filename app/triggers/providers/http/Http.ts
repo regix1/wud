@@ -80,7 +80,13 @@ class Http extends Trigger {
                 };
             }
         }
-        Object.assign(options, getExplicitProxyConfig(this.configuration.proxy, this.configuration.url));
+        Object.assign(
+            options,
+            getExplicitProxyConfig(
+                this.configuration.proxy,
+                this.configuration.url,
+            ),
+        );
         const response = await axios(options);
         return response.data;
     }

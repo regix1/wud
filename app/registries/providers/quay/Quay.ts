@@ -74,7 +74,10 @@ class Quay extends Registry {
                 },
             };
             try {
-                const response = await axios({ ...request, ...getProxyConfig(request.url) });
+                const response = await axios({
+                    ...request,
+                    ...getProxyConfig(request.url),
+                });
                 token = response.token;
             } catch (e) {
                 this.log.warn(

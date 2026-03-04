@@ -153,7 +153,9 @@ class Rocketchat extends Trigger {
                 'content-type': 'application/json',
                 accept: 'application/json',
             },
-            ...getProxyConfig(`${this.configuration.url}/api/v1/chat.postMessage`),
+            ...getProxyConfig(
+                `${this.configuration.url}/api/v1/chat.postMessage`,
+            ),
         };
     }
 }

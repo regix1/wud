@@ -48,7 +48,10 @@ class Gcr extends BaseRegistry {
             },
         };
 
-        const response = await axios({ ...request, ...getProxyConfig(request.url) });
+        const response = await axios({
+            ...request,
+            ...getProxyConfig(request.url),
+        });
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;
