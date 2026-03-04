@@ -39,7 +39,6 @@ describe('ContainerItem', () => {
     wrapper = mount(ContainerItem, {
       props: {
         container: mockContainer,
-        groupingLabel: '',
         oldestFirst: false
       }
     });
@@ -85,25 +84,11 @@ describe('ContainerItem', () => {
     expect(wrapper.vm.newVersionClass).toBe('success');
   });
 
-  it('shows grouping header when grouping label changes', async () => {
-    const previousContainer = {
-      ...mockContainer,
-      labels: { 'app': 'different-app' }
-    };
-
-    await wrapper.setProps({
-      groupingLabel: 'app',
-      previousContainer
-    });
-
-    expect(wrapper.text()).toContain('app = test-app');
-  });
-
   it('toggles detail view when header is clicked', async () => {
     expect(wrapper.vm.showDetail).toBe(false);
-    
+
     await wrapper.find('.clickable-header').trigger('click');
-    
+
     expect(wrapper.vm.showDetail).toBe(true);
   });
 

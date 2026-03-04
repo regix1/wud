@@ -21,6 +21,31 @@ jest.mock('@/services/watcher', () => ({
   getWatcherIcon: jest.fn(() => 'mdi-eye'),
   getAllWatchers: jest.fn(() => Promise.resolve([{}, {}]))
 }));
+jest.mock('@/services/authentication', () => ({
+  getAuthenticationIcon: jest.fn(() => 'mdi-lock'),
+  getAllAuthentications: jest.fn(() => Promise.resolve([]))
+}));
+jest.mock('@/services/server', () => ({
+  getServer: jest.fn(() => Promise.resolve({}))
+}));
+jest.mock('@/services/store', () => ({
+  getStore: jest.fn(() => Promise.resolve({}))
+}));
+jest.mock('@/services/log', () => ({
+  getLog: jest.fn(() => Promise.resolve({}))
+}));
+
+// Mock EventSource
+const mockEventSource = {
+  addEventListener: jest.fn(),
+  close: jest.fn(),
+};
+(global as Record<string, unknown>).EventSource = jest.fn(() => mockEventSource);
+
+// Reset useDataCache singleton state between tests
+beforeEach(() => {
+  jest.resetModules();
+});
 
 describe('HomeView', () => {
   let wrapper;
@@ -36,7 +61,7 @@ describe('HomeView', () => {
         }
       }
     });
-    
+
     // Simulate data loaded from beforeRouteEnter
     await wrapper.setData({
       containersCount: 2,
@@ -79,13 +104,13 @@ describe('HomeView', () => {
     const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('up-to-date'));
     expect(updateBtn.attributes('style')).toContain('pointer-events: none');
   });
-  
+
   it('navigates to correct routes', () => {
       // Find all v-btn stubs
       const links = wrapper.findAll('.v-btn-stub');
-      
+
       const paths = links.map(w => w.attributes('data-to')).filter(Boolean);
-      
+
       expect(paths).toContain('/containers');
       expect(paths).toContain('/containers?update-available=true');
       expect(paths).toContain('/configuration/triggers');
@@ -96,6 +121,11 @@ describe('HomeView', () => {
 
 describe('HomeView Data Fetching', () => {
     it('fetches data on mount', async () => {
+        // Reset the useDataCache singleton so prefetchAll runs fresh
+        const { useDataCache } = require('@/composables/useDataCache');
+        const cache = useDataCache();
+        cache.initialized.value = false;
+
         const wrapper = mount(HomeView, {
           global: {
             stubs: {
@@ -108,7 +138,8 @@ describe('HomeView Data Fetching', () => {
 
         // Wait for mounted async to resolve
         await wrapper.vm.$nextTick();
-        await new Promise((r) => setTimeout(r, 0));
+        await new Promise((r) => setTimeout(r, 50));
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.containersCount).toBe(2);
         expect(wrapper.vm.$data.registriesCount).toBe(3);

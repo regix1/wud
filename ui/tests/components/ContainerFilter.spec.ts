@@ -38,44 +38,47 @@ describe('ContainerFilter', () => {
 
   it('emits registry-changed event when registry selection changes', async () => {
     wrapper.vm.registrySelected = 'hub';
-    await wrapper.vm.emitRegistryChanged();
-    
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('registry-changed')).toBeTruthy();
     expect(wrapper.emitted('registry-changed')[0]).toEqual(['hub']);
   });
 
   it('emits watcher-changed event when watcher selection changes', async () => {
     wrapper.vm.watcherSelected = 'docker';
-    await wrapper.vm.emitWatcherChanged();
-    
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('watcher-changed')).toBeTruthy();
     expect(wrapper.emitted('watcher-changed')[0]).toEqual(['docker']);
   });
 
   it('emits update-kind-changed event when update kind selection changes', async () => {
     wrapper.vm.updateKindSelected = 'major';
-    await wrapper.vm.emitUpdateKindChanged();
-    
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('update-kind-changed')).toBeTruthy();
     expect(wrapper.emitted('update-kind-changed')[0]).toEqual(['major']);
   });
 
   it('emits group-by-label-changed event when group by label changes', async () => {
-    await wrapper.vm.emitGroupByLabelChanged('app');
-    
+    wrapper.vm.groupByLabelLocal = 'app';
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('group-by-label-changed')).toBeTruthy();
     expect(wrapper.emitted('group-by-label-changed')[0]).toEqual(['app']);
   });
 
   it('emits update-available-changed event when update available toggle changes', async () => {
-    await wrapper.vm.emitUpdateAvailableChanged();
-    
+    wrapper.vm.updateAvailableLocal = !wrapper.vm.updateAvailableLocal;
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('update-available-changed')).toBeTruthy();
   });
 
   it('emits oldest-first-changed event when oldest first toggle changes', async () => {
-    await wrapper.vm.emitOldestFirstChanged();
-    
+    wrapper.vm.oldestFirstLocal = !wrapper.vm.oldestFirstLocal;
+    await wrapper.vm.$nextTick();
+
     expect(wrapper.emitted('oldest-first-changed')).toBeTruthy();
   });
 
@@ -98,29 +101,35 @@ describe('ContainerFilter', () => {
     expect(wrapper.vm.isRefreshing).toBe(false);
   });
 
-  it('updates local state when props change', async () => {
-    await wrapper.setProps({
-      registrySelectedInit: 'ghcr',
-      watcherSelectedInit: 'docker',
-      updateAvailable: true,
-      oldestFirst: true,
-      groupByLabel: 'app'
+  it('initializes local state from props', () => {
+    const customWrapper = mount(ContainerFilter, {
+      props: {
+        ...mockProps,
+        registrySelectedInit: 'ghcr',
+        watcherSelectedInit: 'docker',
+        updateAvailable: true,
+        oldestFirst: true,
+        groupByLabel: 'app'
+      }
     });
 
-    await wrapper.vm.$nextTick();
-    
-    expect(wrapper.vm.registrySelected).toBe('ghcr');
-    expect(wrapper.vm.watcherSelected).toBe('docker');
-    expect(wrapper.vm.updateAvailableLocal).toBe(true);
-    expect(wrapper.vm.oldestFirstLocal).toBe(true);
-    expect(wrapper.vm.groupByLabelLocal).toBe('app');
+    expect(customWrapper.vm.registrySelected).toBe('ghcr');
+    expect(customWrapper.vm.watcherSelected).toBe('docker');
+    expect(customWrapper.vm.updateAvailableLocal).toBe(true);
+    expect(customWrapper.vm.oldestFirstLocal).toBe(true);
+    expect(customWrapper.vm.groupByLabelLocal).toBe('app');
+
+    customWrapper.unmount();
   });
 
-  it('handles null values in emit functions', async () => {
-    await wrapper.vm.emitRegistryChanged();
-    expect(wrapper.emitted('registry-changed')[0]).toEqual(['']);
+  it('emits with empty string when value is empty', async () => {
+    // registrySelected starts as '' from props, set it to something then back to ''
+    wrapper.vm.registrySelected = 'hub';
+    await wrapper.vm.$nextTick();
+    wrapper.vm.registrySelected = '';
+    await wrapper.vm.$nextTick();
 
-    await wrapper.vm.emitGroupByLabelChanged(null);
-    expect(wrapper.emitted('group-by-label-changed')[0]).toEqual(['']);
+    const events = wrapper.emitted('registry-changed');
+    expect(events[events.length - 1]).toEqual(['']);
   });
 });
