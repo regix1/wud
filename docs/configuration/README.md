@@ -6,6 +6,8 @@ Please find below the documentation for each of them:
 
 > [**Logs**](/configuration/logs/)
 
+> [**Proxy**](/configuration/proxy/)
+
 > [**Registries**](/configuration/registries/)
 
 > [**Server**](/configuration/server/)

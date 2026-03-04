@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.2.3
+- :star: Add global proxy support (`HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` environment variables)
+- :fire: Fix HTTPS requests through HTTP proxy (use CONNECT tunneling via `https-proxy-agent`)
+
 ## 8.2.2
 - :star: Add public Codeberg registry (codeberg.org) to the list of default supported registries
 - :star: Add public Forgejo registry (code.forgejo.org) to the list of default supported registries

@@ -12,7 +12,7 @@ The `http` trigger lets you send container update notifications via HTTP.
 | `WUD_TRIGGER_HTTP_{trigger_name}_AUTH_USER`     | :white_circle: | The Auth user if BASIC Auth is enabled            |                              |                            |
 | `WUD_TRIGGER_HTTP_{trigger_name}_AUTH_PASSWORD` | :white_circle: | The Auth user password if `BASIC` Auth is enabled |                              |                            |
 | `WUD_TRIGGER_HTTP_{trigger_name}_AUTH_BEARER`   | :white_circle: | The Auth bearer token if `BEARER` Auth is enabled |                              |                            |
-| `WUD_TRIGGER_HTTP_{trigger_name}_PROXY`         | :white_circle: | The HTTP Proxy                                    |                              |                            |
+| `WUD_TRIGGER_HTTP_{trigger_name}_PROXY`         | :white_circle: | The HTTP Proxy URL for this trigger (overrides [global proxy](/configuration/proxy/)) | `http://host:port`           |                            |
 
 ?> This trigger also supports the [common configuration variables](configuration/triggers/?id=common-trigger-configuration).
 
