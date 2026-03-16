@@ -42,9 +42,18 @@ const mockEventSource = {
 };
 (global as Record<string, unknown>).EventSource = jest.fn(() => mockEventSource);
 
+// Mock useRouter
+const mockPush = jest.fn();
+jest.mock('vue-router', () => ({
+  useRouter: jest.fn(() => ({
+    push: mockPush,
+  })),
+}));
+
 // Reset useDataCache singleton state between tests
 beforeEach(() => {
   jest.resetModules();
+  mockPush.mockClear();
 });
 
 describe('HomeView', () => {
@@ -53,12 +62,7 @@ describe('HomeView', () => {
   beforeEach(async () => {
     wrapper = mount(HomeView, {
       global: {
-        stubs: {
-          'v-btn': {
-            template: '<button class="v-btn-stub" :data-to="to"><slot /></button>',
-            props: ['to']
-          }
-        }
+        stubs: {}
       }
     });
 
@@ -92,8 +96,8 @@ describe('HomeView', () => {
 
   it('displays update warning when updates are available', () => {
     expect(wrapper.text()).toContain('1 updates available');
-    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('updates available'));
-    expect(updateBtn.attributes('style')).not.toContain('pointer-events: none');
+    const updateLink = wrapper.find('.update-link');
+    expect(updateLink.exists()).toBe(true);
   });
 
   it('displays success message when no updates are available', async () => {
@@ -101,21 +105,28 @@ describe('HomeView', () => {
       containersToUpdateCount: 0
     });
     expect(wrapper.text()).toContain('all containers are up-to-date');
-    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('up-to-date'));
-    expect(updateBtn.attributes('style')).toContain('pointer-events: none');
+    const updateLink = wrapper.find('.update-link');
+    expect(updateLink.exists()).toBe(false);
   });
 
-  it('navigates to correct routes', () => {
-      // Find all v-btn stubs
-      const links = wrapper.findAll('.v-btn-stub');
+  it('navigates to correct routes on card click', async () => {
+    const cards = wrapper.findAll('.home-card');
+    expect(cards).toHaveLength(4);
 
-      const paths = links.map(w => w.attributes('data-to')).filter(Boolean);
+    // Containers card uses @click with router.push
+    await cards[0].trigger('click');
+    expect(mockPush).toHaveBeenCalledWith('/containers');
 
-      expect(paths).toContain('/containers');
-      expect(paths).toContain('/containers?update-available=true');
-      expect(paths).toContain('/configuration/triggers');
-      expect(paths).toContain('/configuration/watchers');
-      expect(paths).toContain('/configuration/registries');
+    // Other cards use `to` prop — check it's set correctly
+    expect(cards[1].attributes('to')).toBe('/configuration/triggers');
+    expect(cards[2].attributes('to')).toBe('/configuration/watchers');
+    expect(cards[3].attributes('to')).toBe('/configuration/registries');
+  });
+
+  it('navigates to updates on update-link click', async () => {
+    const updateLink = wrapper.find('.update-link');
+    await updateLink.trigger('click');
+    expect(mockPush).toHaveBeenCalledWith('/containers?update-available=true');
   });
 });
 
@@ -128,11 +139,7 @@ describe('HomeView Data Fetching', () => {
 
         const wrapper = mount(HomeView, {
           global: {
-            stubs: {
-              'v-btn': {
-                template: '<button class="v-btn-stub"><slot /></button>',
-              }
-            }
+            stubs: {}
           }
         });
 
