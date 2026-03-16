@@ -26,6 +26,7 @@
     <v-row
       v-for="container in containersFiltered"
       :key="container.id"
+      dense
     >
       <v-col>
         <div v-if="groupHeaderIds.has(container.id)" class="mb-2">
@@ -60,8 +61,8 @@
 
 <style scoped>
 .container-item-col {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   content-visibility: auto;
   contain-intrinsic-size: auto 80px;
 }

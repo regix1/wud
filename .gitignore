@@ -104,3 +104,7 @@ typings/
 app/dist/
 dist/
 UI_IMPROVEMENT_PLAN.md
+
+# Serena
+**/.serena/
+.claude/frontend-architecture-plan.md

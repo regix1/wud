@@ -2,7 +2,6 @@ import {
   ref,
   computed,
   onMounted,
-  onUpdated,
   inject,
   getCurrentInstance,
   watch,
@@ -93,17 +92,24 @@ export default defineComponent({
       }
     });
 
-    onUpdated(async () => {
+    let serverConfigFetching = false;
+    watch(authenticated, async (isAuthenticated) => {
       if (
-        authenticated.value &&
+        isAuthenticated &&
         instance &&
-        !instance.appContext.config.globalProperties.$serverConfig
+        !instance.appContext.config.globalProperties.$serverConfig &&
+        !serverConfigFetching
       ) {
-        const server = await getServer();
-        instance.appContext.config.globalProperties.$serverConfig =
-          server.configuration;
+        serverConfigFetching = true;
+        try {
+          const server = await getServer();
+          instance.appContext.config.globalProperties.$serverConfig =
+            server.configuration;
+        } finally {
+          serverConfigFetching = false;
+        }
       }
-    });
+    }, { immediate: true });
 
     return {
       snackbarMessage,

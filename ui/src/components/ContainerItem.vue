@@ -261,7 +261,7 @@
   opacity: 1;
 }
 
-.detail-tabs :deep(.v-tabs-slider) {
+.detail-tabs :deep(.v-tab__slider) {
   height: 2px;
 }
 </style>

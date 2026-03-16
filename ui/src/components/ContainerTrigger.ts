@@ -37,13 +37,12 @@ export default defineComponent({
         const message = err instanceof Error ? err.message : String(err);
         this.$eventBus.emit(
           "notify",
-          `Trigger executed with error (${message}})`,
+          `Trigger executed with error (${message})`,
           "error",
         );
       } finally {
         this.isTriggering = false;
       }
-      this.isTriggering = false;
     },
   },
 });

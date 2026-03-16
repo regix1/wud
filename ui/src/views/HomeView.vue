@@ -5,25 +5,21 @@
         <v-card
           class="home-card text-center"
           variant="flat"
+          @click="navigateContainers"
           style="border-top: 3px solid rgb(var(--v-theme-primary))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{
               containerIcon
             }}</v-icon>
-            <v-btn variant="plain" size="x-large" to="/containers"
-              >{{ containersCount }} containers</v-btn
+            <div class="text-h6 text-uppercase mt-2">{{ containersCount }} containers</div>
+            <div
+              v-if="containersToUpdateCount > 0"
+              class="text-caption text-warning text-uppercase mt-1 update-link"
+              @click.stop="navigateUpdates"
+              >({{ containerUpdateMessage }})</div
             >
-            <v-btn
-              size="small"
-              variant="plain"
-              :color="containersToUpdateCount > 0 ? 'warning' : 'success'"
-              to="/containers?update-available=true"
-              :style="{
-                pointerEvents: containersToUpdateCount === 0 ? 'none' : 'auto',
-              }"
-              >({{ containerUpdateMessage }})</v-btn
-            >
+            <div v-else class="text-caption text-success text-uppercase mt-1">({{ containerUpdateMessage }})</div>
           </div>
         </v-card>
       </v-col>
@@ -31,13 +27,12 @@
         <v-card
           class="home-card text-center"
           variant="flat"
+          to="/configuration/triggers"
           style="border-top: 3px solid rgb(var(--v-theme-accent))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{ triggerIcon }}</v-icon>
-            <v-btn variant="plain" size="x-large" to="/configuration/triggers"
-              >{{ triggersCount }} triggers</v-btn
-            >
+            <div class="text-h6 text-uppercase mt-2">{{ triggersCount }} triggers</div>
           </div>
         </v-card>
       </v-col>
@@ -45,13 +40,12 @@
         <v-card
           class="home-card text-center"
           variant="flat"
+          to="/configuration/watchers"
           style="border-top: 3px solid rgb(var(--v-theme-secondary))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{ watcherIcon }}</v-icon>
-            <v-btn variant="plain" size="x-large" to="/configuration/watchers"
-              >{{ watchersCount }} watchers</v-btn
-            >
+            <div class="text-h6 text-uppercase mt-2">{{ watchersCount }} watchers</div>
           </div>
         </v-card>
       </v-col>
@@ -59,15 +53,14 @@
         <v-card
           class="home-card text-center"
           variant="flat"
+          to="/configuration/registries"
           style="border-top: 3px solid rgb(var(--v-theme-info))"
         >
           <div class="d-flex flex-column align-center justify-center fill-height pa-4">
             <v-icon color="secondary" class="home-icon">{{
               registryIcon
             }}</v-icon>
-            <v-btn variant="plain" size="x-large" to="/configuration/registries"
-              >{{ registriesCount }} registries</v-btn
-            >
+            <div class="text-h6 text-uppercase mt-2">{{ registriesCount }} registries</div>
           </div>
         </v-card>
       </v-col>
@@ -94,6 +87,8 @@
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   animation: card-enter 0.4s ease-out backwards;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .home-card:hover {
@@ -101,9 +96,22 @@
   transform: translateY(-2px);
 }
 
+.home-card :deep(.v-card__overlay) {
+  display: none;
+}
+
 .home-icon {
   font-size: clamp(48px, 10vw, 80px);
   width: clamp(48px, 10vw, 80px);
   height: clamp(48px, 10vw, 80px);
+}
+
+.update-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.update-link:hover {
+  text-decoration: underline;
 }
 </style>

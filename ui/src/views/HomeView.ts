@@ -3,9 +3,14 @@ import { getRegistryIcon } from "@/services/registry";
 import { getTriggerIcon } from "@/services/trigger";
 import { getWatcherIcon } from "@/services/watcher";
 import { defineComponent } from "vue";
+import { useRouter } from "vue-router";
 import { useDataCache } from "@/composables/useDataCache";
 
 export default defineComponent({
+  setup() {
+    const router = useRouter();
+    return { router };
+  },
   data() {
     return {
       loading: true,
@@ -89,6 +94,12 @@ export default defineComponent({
   },
 
   methods: {
+    navigateContainers() {
+      this.router.push("/containers");
+    },
+    navigateUpdates() {
+      this.router.push("/containers?update-available=true");
+    },
     recalculateContainerCounts() {
       this.containersCount = this.containers.length;
       this.containersToUpdateCount = this.containers.filter(

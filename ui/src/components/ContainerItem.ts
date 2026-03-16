@@ -6,7 +6,7 @@ import ContainerImage from "@/components/ContainerImage.vue";
 import ContainerTriggers from "@/components/ContainerTriggers.vue";
 import ContainerUpdate from "@/components/ContainerUpdate.vue";
 import IconRenderer from "@/components/IconRenderer.vue";
-import { defineComponent } from "vue";
+import { defineComponent, nextTick } from "vue";
 import type { PropType } from "vue";
 import type { Container } from "@/types/container";
 
@@ -72,9 +72,9 @@ export default defineComponent({
       }
       if (this.container.updateKind) {
         newVersion = this.container.updateKind.remoteValue;
-      }
-      if (this.container.updateKind.kind === "digest") {
-        newVersion = this.$filters.short(newVersion, 15);
+        if (this.container.updateKind.kind === "digest") {
+          newVersion = this.$filters.short(newVersion, 15);
+        }
       }
       return newVersion;
     },
@@ -115,12 +115,17 @@ export default defineComponent({
       // Prevent collapse when selecting text only
       if (window.getSelection()?.type !== "Range") {
         this.showDetail = !this.showDetail;
-      }
 
-      // Hack because of a render bug on tabs inside a collapsible element
-      const tabs = this.$refs.tabs as { onResize?: () => void } | undefined;
-      if (tabs && tabs.onResize) {
-        tabs.onResize();
+        // Force tab re-render after expand transition
+        if (this.showDetail) {
+          const currentTab = this.tab;
+          nextTick(() => {
+            this.tab = -1;
+            nextTick(() => {
+              this.tab = currentTab;
+            });
+          });
+        }
       }
     },
 
