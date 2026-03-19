@@ -426,7 +426,7 @@ class Docker extends Trigger {
             // Safety check: refuse to update a container that publishes the port
             // used by the watcher to connect to this Docker host. Updating such a
             // container (e.g. docker-socket-proxy) would sever WUD's own connection.
-            if (watcher.configuration.host) {
+            if (watcher.configuration?.host) {
                 const portBindings =
                     currentContainerSpec.HostConfig?.PortBindings || {};
                 const watcherPort = String(watcher.configuration.port);
