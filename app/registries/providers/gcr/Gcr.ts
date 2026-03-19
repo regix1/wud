@@ -2,6 +2,7 @@
 import axios from 'axios';
 import BaseRegistry from '../../BaseRegistry';
 import { getProxyConfig } from '../../../proxy';
+import retryOnRateLimit from '../../retryOnRateLimit';
 
 /**
  * Google Container Registry integration.
@@ -48,10 +49,10 @@ class Gcr extends BaseRegistry {
             },
         };
 
-        const response = await axios({
-            ...request,
-            ...getProxyConfig(request.url),
-        });
+        const response = await retryOnRateLimit(
+            () => axios({ ...request, ...getProxyConfig(request.url) }),
+            this.log,
+        );
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

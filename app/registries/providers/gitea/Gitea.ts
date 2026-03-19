@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Custom from '../custom/Custom';
 import { getProxyConfig } from '../../../proxy';
+import retryOnRateLimit from '../../retryOnRateLimit';
 
 /**
  * Gitea Container Registry integration.
@@ -90,10 +91,14 @@ class Gitea extends Custom {
             axiosConfig.headers.Authorization = `Basic ${credentials}`;
         }
 
-        const response = await axios({
-            ...axiosConfig,
-            ...getProxyConfig(axiosConfig.url),
-        });
+        const response = await retryOnRateLimit(
+            () =>
+                axios({
+                    ...axiosConfig,
+                    ...getProxyConfig(axiosConfig.url),
+                }),
+            this.log,
+        );
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;

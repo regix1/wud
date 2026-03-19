@@ -6,6 +6,7 @@ maintenanceMode.suppress = true; // Disable aws sdk maintenance mode message at 
 import axios from 'axios';
 import Registry from '../../Registry';
 import { getProxyConfig } from '../../../proxy';
+import retryOnRateLimit from '../../retryOnRateLimit';
 
 const ECR_PUBLIC_GALLERY_HOSTNAME = 'public.ecr.aws';
 
@@ -75,14 +76,18 @@ class Ecr extends Registry {
             // Public ECR gallery
         } else if (image.registry.url.includes(ECR_PUBLIC_GALLERY_HOSTNAME)) {
             const ecrUrl = 'https://public.ecr.aws/token/';
-            const response = await axios({
-                method: 'GET',
-                url: ecrUrl,
-                headers: {
-                    Accept: 'application/json',
-                },
-                ...getProxyConfig(ecrUrl),
-            });
+            const response = await retryOnRateLimit(
+                () =>
+                    axios({
+                        method: 'GET',
+                        url: ecrUrl,
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                        ...getProxyConfig(ecrUrl),
+                    }),
+                this.log,
+            );
             requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         }
         return requestOptionsWithAuth;

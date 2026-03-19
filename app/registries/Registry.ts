@@ -4,6 +4,7 @@ import Component from '../registry/Component';
 import { getSummaryTags } from '../prometheus/registry';
 import { ContainerImage } from '../model/container';
 import { getProxyConfig } from '../proxy';
+import retryOnRateLimit from './retryOnRateLimit';
 
 export type RegistryImage = ContainerImage;
 
@@ -340,8 +341,9 @@ class Registry extends Component {
         );
 
         try {
-            const response = (await axios(
-                axiosOptionsWithAuth,
+            const response = (await retryOnRateLimit(
+                () => axios(axiosOptionsWithAuth),
+                this.log,
             )) as AxiosResponse<T>;
             this.observePrometheusSummaryTags(start);
             return resolveWithFullResponse ? response : response.data;

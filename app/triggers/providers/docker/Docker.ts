@@ -423,6 +423,26 @@ class Docker extends Trigger {
             );
             const currentContainerState = currentContainerSpec.State;
 
+            // Safety check: refuse to update a container that publishes the port
+            // used by the watcher to connect to this Docker host. Updating such a
+            // container (e.g. docker-socket-proxy) would sever WUD's own connection.
+            if (watcher.configuration.host) {
+                const portBindings = currentContainerSpec.HostConfig?.PortBindings || {};
+                const watcherPort = String(watcher.configuration.port);
+                const publishesWatcherPort = Object.values(portBindings).some(
+                    (bindings) => Array.isArray(bindings) && bindings.some((b) => String(b.HostPort) === watcherPort),
+                );
+                if (publishesWatcherPort) {
+                    logContainer.warn(
+                        `Refusing to update container ${container.name} because it publishes port ${watcherPort} ` +
+                        `which is used by watcher ${container.watcher} to connect to this Docker host. ` +
+                        `Updating this container would sever the connection. ` +
+                        `To update it manually, stop it outside of WUD or add wud.watch=false label.`,
+                    );
+                    return;
+                }
+            }
+
             // Try to remove previous pulled images
             if (this.configuration.prune) {
                 await this.pruneImages(

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Registry from '../../Registry';
 import { getProxyConfig } from '../../../proxy';
+import retryOnRateLimit from '../../retryOnRateLimit';
 
 /**
  * Quay.io Registry integration.
@@ -74,10 +75,14 @@ class Quay extends Registry {
                 },
             };
             try {
-                const response = await axios({
-                    ...request,
-                    ...getProxyConfig(request.url),
-                });
+                const response = await retryOnRateLimit(
+                    () =>
+                        axios({
+                            ...request,
+                            ...getProxyConfig(request.url),
+                        }),
+                    this.log,
+                );
                 token = response.token;
             } catch (e) {
                 this.log.warn(

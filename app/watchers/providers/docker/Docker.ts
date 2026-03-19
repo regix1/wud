@@ -350,6 +350,7 @@ class Docker extends Watcher {
     public watchCronTimeout: any;
     public watchCronDebounced: any;
     public listenDockerEventsTimeout: any;
+    private consecutiveConnectionFailures: number = 0;
 
     ensureLogger() {
         if (!this.log) {
@@ -498,7 +499,7 @@ class Docker extends Watcher {
                 ],
             },
         };
-        this.dockerApi.getEvents(options, (err, stream) => {
+        this.dockerApi.getEvents(options, (err, stream: (NodeJS.ReadableStream & { destroy(): void }) | undefined) => {
             if (err) {
                 if (this.log && typeof this.log.warn === 'function') {
                     this.log.warn(
@@ -506,7 +507,27 @@ class Docker extends Watcher {
                     );
                     this.log.debug(err);
                 }
+                this.consecutiveConnectionFailures =
+                    (this.consecutiveConnectionFailures || 0) + 1;
+                const delay = Math.min(
+                    10000 * this.consecutiveConnectionFailures,
+                    60000,
+                );
+                if (this.consecutiveConnectionFailures >= 5) {
+                    this.log.error(
+                        `Docker host appears unreachable after ${this.consecutiveConnectionFailures} consecutive attempts, ` +
+                            `will keep retrying every 60s`,
+                    );
+                }
+                setTimeout(() => this.listenDockerEvents(), delay);
             } else {
+                const previousFailures = this.consecutiveConnectionFailures;
+                this.consecutiveConnectionFailures = 0;
+                if (previousFailures > 0) {
+                    this.log.info(
+                        `Docker event stream reconnected successfully after ${previousFailures} failed attempt(s)`,
+                    );
+                }
                 let buffer = '';
                 const collectChunks = (chunk: Buffer) => {
                     buffer += chunk.toString();
@@ -521,10 +542,14 @@ class Docker extends Watcher {
                 stream.on('data', collectChunks);
                 stream.on('error', (err: Error) => {
                     this.log.warn(`Docker event stream error: ${err.message}`);
+                    stream.removeAllListeners();
+                    stream.destroy();
                     setTimeout(() => this.listenDockerEvents(), 5000);
                 });
                 stream.on('end', () => {
                     this.log.warn('Docker event stream ended, reconnecting...');
+                    stream.removeAllListeners();
+                    stream.destroy();
                     setTimeout(() => this.listenDockerEvents(), 5000);
                 });
             }
@@ -642,9 +667,10 @@ class Docker extends Watcher {
             );
         }
         try {
-            const containerReports = await Promise.all(
-                containers.map((container) => this.watchContainer(container)),
-            );
+            const containerReports = [];
+            for (const container of containers) {
+                containerReports.push(await this.watchContainer(container));
+            }
             event.emitContainerReports(containerReports);
             return containerReports;
         } catch (e: any) {

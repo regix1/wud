@@ -2,6 +2,7 @@
 import axios from 'axios';
 import Registry from '../../Registry';
 import { getProxyConfig } from '../../../proxy';
+import retryOnRateLimit from '../../retryOnRateLimit';
 
 /**
  * Docker Gitlab integration.
@@ -70,10 +71,10 @@ class Gitlab extends Registry {
                 Authorization: `Basic ${Gitlab.base64Encode('', this.configuration.token)}`,
             },
         };
-        const response = await axios({
-            ...request,
-            ...getProxyConfig(request.url),
-        });
+        const response = await retryOnRateLimit(
+            () => axios({ ...request, ...getProxyConfig(request.url) }),
+            this.log,
+        );
         const requestOptionsWithAuth = requestOptions;
         requestOptionsWithAuth.headers.Authorization = `Bearer ${response.data.token}`;
         return requestOptionsWithAuth;
