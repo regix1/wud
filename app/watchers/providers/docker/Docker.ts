@@ -499,61 +499,73 @@ class Docker extends Watcher {
                 ],
             },
         };
-        this.dockerApi.getEvents(options, (err, stream: (NodeJS.ReadableStream & { destroy(): void }) | undefined) => {
-            if (err) {
-                if (this.log && typeof this.log.warn === 'function') {
-                    this.log.warn(
-                        `Unable to listen to Docker events [${err.message}]`,
-                    );
-                    this.log.debug(err);
-                }
-                this.consecutiveConnectionFailures =
-                    (this.consecutiveConnectionFailures || 0) + 1;
-                const delay = Math.min(
-                    10000 * this.consecutiveConnectionFailures,
-                    60000,
-                );
-                if (this.consecutiveConnectionFailures >= 5) {
-                    this.log.error(
-                        `Docker host appears unreachable after ${this.consecutiveConnectionFailures} consecutive attempts, ` +
-                            `will keep retrying every 60s`,
-                    );
-                }
-                setTimeout(() => this.listenDockerEvents(), delay);
-            } else {
-                const previousFailures = this.consecutiveConnectionFailures;
-                this.consecutiveConnectionFailures = 0;
-                if (previousFailures > 0) {
-                    this.log.info(
-                        `Docker event stream reconnected successfully after ${previousFailures} failed attempt(s)`,
-                    );
-                }
-                let buffer = '';
-                const collectChunks = (chunk: Buffer) => {
-                    buffer += chunk.toString();
-                    const lines = buffer.split('\n');
-                    buffer = lines.pop() ?? '';
-                    for (const line of lines) {
-                        if (line.trim().length > 0) {
-                            this.onDockerEvent(Buffer.from(line));
-                        }
+        this.dockerApi.getEvents(
+            options,
+            (
+                err,
+                stream:
+                    | (NodeJS.ReadableStream & { destroy(): void })
+                    | undefined,
+            ) => {
+                if (err) {
+                    if (this.log && typeof this.log.warn === 'function') {
+                        this.log.warn(
+                            `Unable to listen to Docker events [${err.message}]`,
+                        );
+                        this.log.debug(err);
                     }
-                };
-                stream.on('data', collectChunks);
-                stream.on('error', (err: Error) => {
-                    this.log.warn(`Docker event stream error: ${err.message}`);
-                    stream.removeAllListeners();
-                    stream.destroy();
-                    setTimeout(() => this.listenDockerEvents(), 5000);
-                });
-                stream.on('end', () => {
-                    this.log.warn('Docker event stream ended, reconnecting...');
-                    stream.removeAllListeners();
-                    stream.destroy();
-                    setTimeout(() => this.listenDockerEvents(), 5000);
-                });
-            }
-        });
+                    this.consecutiveConnectionFailures =
+                        (this.consecutiveConnectionFailures || 0) + 1;
+                    const delay = Math.min(
+                        10000 * this.consecutiveConnectionFailures,
+                        60000,
+                    );
+                    if (this.consecutiveConnectionFailures >= 5) {
+                        this.log.error(
+                            `Docker host appears unreachable after ${this.consecutiveConnectionFailures} consecutive attempts, ` +
+                                `will keep retrying every 60s`,
+                        );
+                    }
+                    setTimeout(() => this.listenDockerEvents(), delay);
+                } else {
+                    const previousFailures = this.consecutiveConnectionFailures;
+                    this.consecutiveConnectionFailures = 0;
+                    if (previousFailures > 0) {
+                        this.log.info(
+                            `Docker event stream reconnected successfully after ${previousFailures} failed attempt(s)`,
+                        );
+                    }
+                    let buffer = '';
+                    const collectChunks = (chunk: Buffer) => {
+                        buffer += chunk.toString();
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() ?? '';
+                        for (const line of lines) {
+                            if (line.trim().length > 0) {
+                                this.onDockerEvent(Buffer.from(line));
+                            }
+                        }
+                    };
+                    stream.on('data', collectChunks);
+                    stream.on('error', (err: Error) => {
+                        this.log.warn(
+                            `Docker event stream error: ${err.message}`,
+                        );
+                        stream.removeAllListeners();
+                        stream.destroy();
+                        setTimeout(() => this.listenDockerEvents(), 5000);
+                    });
+                    stream.on('end', () => {
+                        this.log.warn(
+                            'Docker event stream ended, reconnecting...',
+                        );
+                        stream.removeAllListeners();
+                        stream.destroy();
+                        setTimeout(() => this.listenDockerEvents(), 5000);
+                    });
+                }
+            },
+        );
     }
 
     /**

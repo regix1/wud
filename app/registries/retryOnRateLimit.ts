@@ -25,7 +25,9 @@ async function retryOnRateLimit(
                 log.warn(
                     `Rate limited (429), retry ${attempt}/${maxRetries - 1} after ${delay}ms`,
                 );
-                await new Promise<void>((resolve) => setTimeout(resolve, delay));
+                await new Promise<void>((resolve) =>
+                    setTimeout(resolve, delay),
+                );
                 continue;
             }
             throw error;
