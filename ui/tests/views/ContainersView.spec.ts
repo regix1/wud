@@ -1,5 +1,20 @@
 import { mount } from '@vue/test-utils';
+import { ref } from 'vue';
 import ContainersView from '@/views/ContainersView.vue';
+
+// Create a controllable ref for containers that tests can mutate directly
+const mockContainersRef = ref<unknown[]>([]);
+
+// Mock useDataCache so containers computed property reads from our controllable ref
+jest.mock('@/composables/useDataCache', () => ({
+  useDataCache: jest.fn(() => ({
+    containers: mockContainersRef,
+    prefetchAll: jest.fn().mockResolvedValue(undefined),
+    invalidate: jest.fn(),
+    connectSSE: jest.fn(),
+    disconnectSSE: jest.fn(),
+  })),
+}));
 
 // Mock the container service
 jest.mock('@/services/container', () => ({
@@ -30,19 +45,30 @@ const mockContainers = [
 describe('ContainersView', () => {
   let wrapper;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const { getAllContainers } = require('@/services/container');
     getAllContainers.mockResolvedValue(mockContainers);
+
+    // Reset the shared ref before each test
+    mockContainersRef.value = [];
 
     wrapper = mount(ContainersView, {
       global: {
         stubs: {
           'container-filter': true,
           'container-item': true
+        },
+        mocks: {
+          $router: { replace: jest.fn() },
+          $route: { query: {} },
+          $eventBus: { emit: jest.fn() },
         }
       }
     });
+
+    // Populate containers via the cache ref and wait for the watcher to fire
     wrapper.vm.onRefreshAllContainers(mockContainers);
+    await wrapper.vm.$nextTick();
   });
 
   afterEach(() => {
@@ -152,7 +178,7 @@ describe('ContainersView', () => {
 
   it('removes container from list when deleted', async () => {
     const containerToDelete = mockContainers[0];
-    
+
     wrapper.vm.removeContainerFromList(containerToDelete);
 
     expect(wrapper.vm.containers).toHaveLength(1);
@@ -182,7 +208,8 @@ describe('ContainersView', () => {
   });
 
   it('shows no containers message when list is empty', async () => {
-    wrapper.vm.containers = [];
+    // Set the underlying cache ref directly — containers is a readonly computed
+    mockContainersRef.value = [];
     await wrapper.vm.$nextTick();
 
     expect(wrapper.vm.containersFiltered).toHaveLength(0);
