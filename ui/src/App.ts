@@ -31,7 +31,7 @@ export default defineComponent({
     const instance = getCurrentInstance();
     const { mobile } = useDisplay();
 
-    const { prefetchAll } = useDataCache();
+    const { prefetchAll, connectSSE, disconnectSSE } = useDataCache();
 
     const snackbarMessage = ref("");
     const snackbarShow = ref(false);
@@ -58,9 +58,10 @@ export default defineComponent({
       return user.value !== undefined;
     });
 
-    const onAuthenticated = (userData: Record<string, unknown>) => {
+    const onAuthenticated = async (userData: Record<string, unknown>) => {
       user.value = userData;
-      prefetchAll();
+      connectSSE(); // Start SSE immediately — events queue until initialized
+      await prefetchAll(); // Fetch initial data, then flush queued events
     };
 
     const notify = (message: string, level = "info") => {
@@ -84,6 +85,7 @@ export default defineComponent({
     watch(route, async (newRoute) => {
       if (newRoute.name === 'login') {
         user.value = undefined;
+        disconnectSSE();
       } else if (!user.value) {
         const currentUser = await getUser();
         if (currentUser) {

@@ -14,8 +14,6 @@ export default defineComponent({
   data() {
     return {
       loading: true,
-      containers: [] as Container[],
-      eventSource: null as EventSource | null,
       registrySelected: "",
       watcherSelected: "",
       updateKindSelected: "",
@@ -66,10 +64,14 @@ export default defineComponent({
           this.cachedLabels = newLabels;
         }
       },
-      deep: false,
+      deep: true,
     },
   },
   computed: {
+    containers(): Container[] {
+      const cache = useDataCache();
+      return cache.containers.value;
+    },
     allContainerLabels() {
       return this.cachedLabels;
     },
@@ -187,10 +189,12 @@ export default defineComponent({
       this.$router.replace({ query });
     },
     onRefreshAllContainers(containersRefreshed: Container[]) {
-      this.containers = containersRefreshed;
+      const cache = useDataCache();
+      cache.containers.value = containersRefreshed;
     },
     removeContainerFromList(container: Container) {
-      this.containers = this.containers.filter((c) => c.id !== container.id);
+      const cache = useDataCache();
+      cache.containers.value = cache.containers.value.filter((c: Container) => c.id !== container.id);
     },
     async deleteContainer(container: Container) {
       try {
@@ -232,7 +236,6 @@ export default defineComponent({
     try {
       const cache = useDataCache();
       await cache.prefetchAll();
-      this.containers = cache.containers.value as unknown as Container[];
     } catch (e: unknown) {
       this.$eventBus.emit(
         "notify",
@@ -242,35 +245,9 @@ export default defineComponent({
     } finally {
       this.loading = false;
     }
-
-    // Subscribe to real-time container updates via SSE
-    this.eventSource = new EventSource('/api/sse');
-
-    this.eventSource.addEventListener('container-added', (event: MessageEvent) => {
-      const container: Container = JSON.parse(event.data);
-      if (!this.containers.some((c) => c.id === container.id)) {
-        this.containers.push(container);
-      }
-    });
-
-    this.eventSource.addEventListener('container-updated', (event: MessageEvent) => {
-      const container: Container = JSON.parse(event.data);
-      const index = this.containers.findIndex((c) => c.id === container.id);
-      if (index !== -1) {
-        this.containers.splice(index, 1, container);
-      }
-    });
-
-    this.eventSource.addEventListener('container-removed', (event: MessageEvent) => {
-      const container: Container = JSON.parse(event.data);
-      this.containers = this.containers.filter((c) => c.id !== container.id);
-    });
   },
 
   beforeUnmount() {
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
-    }
+    // SSE lifecycle is managed by useDataCache composable
   },
 });

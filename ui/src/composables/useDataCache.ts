@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import { Container } from '@/types/container';
 import { getAllContainers } from '@/services/container';
 import { getAllWatchers } from '@/services/watcher';
 import { getAllTriggers } from '@/services/trigger';
@@ -9,7 +10,7 @@ import { getStore } from '@/services/store';
 import { getLog } from '@/services/log';
 
 // Module-level singleton state — shared across all consumers
-const containers = ref<Record<string, unknown>[]>([]);
+const containers = ref<Container[]>([]);
 const watchers = ref<Record<string, unknown>[]>([]);
 const triggers = ref<Record<string, unknown>[]>([]);
 const registries = ref<Record<string, unknown>[]>([]);
@@ -23,6 +24,11 @@ const initialized = ref(false);
 
 // Deduplication: if a prefetch is already in flight, return the same promise
 let prefetchPromise: Promise<void> | null = null;
+
+// SSE connection state
+let eventSource: EventSource | null = null;
+let explicitlyClosed = false;
+const pendingEvents: Array<{ type: string; data: string }> = [];
 
 async function prefetchAll(): Promise<void> {
   if (initialized.value) return;
@@ -50,6 +56,13 @@ async function prefetchAll(): Promise<void> {
       storeData.value = st;
       logData.value = l;
       initialized.value = true;
+      // Flush any SSE events that arrived during initial fetch
+      while (pendingEvents.length > 0) {
+        const event = pendingEvents.shift()!;
+        if (event.type === 'container-added') handleContainerAdded(event.data);
+        else if (event.type === 'container-updated') handleContainerUpdated(event.data);
+        else if (event.type === 'container-removed') handleContainerRemoved(event.data);
+      }
     } finally {
       loading.value = false;
       prefetchPromise = null;
@@ -61,6 +74,74 @@ async function prefetchAll(): Promise<void> {
 
 function invalidate(): void {
   initialized.value = false;
+}
+
+function handleContainerAdded(data: string): void {
+  const container = JSON.parse(data) as Container;
+  const exists = containers.value.find((c: Container) => c.id === container.id);
+  if (!exists) {
+    containers.value.push(container);
+  }
+}
+
+function handleContainerUpdated(data: string): void {
+  const container = JSON.parse(data) as Container;
+  const index = containers.value.findIndex((c: Container) => c.id === container.id);
+  if (index !== -1) {
+    containers.value.splice(index, 1, container);
+  } else {
+    containers.value.push(container);
+  }
+}
+
+function handleContainerRemoved(data: string): void {
+  const container = JSON.parse(data) as Container;
+  containers.value = containers.value.filter((c: Container) => c.id !== container.id);
+}
+
+function connectSSE(): void {
+  if (eventSource) return;
+  explicitlyClosed = false;
+
+  eventSource = new EventSource('/api/sse');
+
+  eventSource.addEventListener('container-added', (e: MessageEvent) => {
+    if (!initialized.value) {
+      pendingEvents.push({ type: 'container-added', data: e.data });
+      return;
+    }
+    handleContainerAdded(e.data);
+  });
+
+  eventSource.addEventListener('container-updated', (e: MessageEvent) => {
+    if (!initialized.value) {
+      pendingEvents.push({ type: 'container-updated', data: e.data });
+      return;
+    }
+    handleContainerUpdated(e.data);
+  });
+
+  eventSource.addEventListener('container-removed', (e: MessageEvent) => {
+    if (!initialized.value) {
+      pendingEvents.push({ type: 'container-removed', data: e.data });
+      return;
+    }
+    handleContainerRemoved(e.data);
+  });
+
+  eventSource.onerror = () => {
+    if (!explicitlyClosed) {
+      console.warn('SSE connection error — auto-reconnecting...');
+    }
+  };
+}
+
+function disconnectSSE(): void {
+  explicitlyClosed = true;
+  if (eventSource) {
+    eventSource.close();
+    eventSource = null;
+  }
 }
 
 export function useDataCache() {
@@ -77,5 +158,7 @@ export function useDataCache() {
     initialized,
     prefetchAll,
     invalidate,
+    connectSSE,
+    disconnectSSE,
   };
 }
